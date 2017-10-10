@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConceptualPacerSkeleton", "ConceptualPacerSkeleton\ConceptualPacerSkeleton.pyproj", "{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4187E053-C83D-46ED-AE35-E12BB8D1267E}
+	EndGlobalSection
+EndGlobal
