@@ -1,6 +1,9 @@
 from time import sleep
 from msvcrt import getch
 
+from dumstick import *
+from saveload import *
+
 
 def main():
     while True:
@@ -28,59 +31,6 @@ def identify_user():
 
 def work_with_user(username, userdata_storage):
     
-    def storage_exists(userdata_storage):
-        dummy('checks if userdata_storage exists...')
-        if what_storagetype(userdata_storage) in ['bin-file', 'txt-file']:
-            try:
-                with open(userdata_storage) as temp:
-                    flag = True
-                    dummy('... it does.')
-            except FileNotFoundError:
-                flag = False
-                dummy('... it does not.')
-        return flag
-
-    def what_storagetype(userdata_storage):
-        if userdata_storage.endswith('.bin'):
-            type ='bin-file'
-        elif userdata_storage.endswith('.txt'):
-            type ='txt-file'
-        return type
-
-    def load_userdata(userdata_storage):
-        
-        def load_DB(userdata_storage):
-            pass
-        
-        def load_file_txt(userdata_storage):
-            userdata = []
-            return userdata
-
-        def load_file_pickle(userdata_storage):
-            import pickle
-            with open(userdata_storage, 'rb') as pickle_file:
-                userdata = pickle.load(pickle_file)
-            dummy('loads userdata from binary userdata-file...')
-            return userdata
-
-        def load_cloud(userdata_storage):
-            pass
-
-        if what_storagetype(userdata_storage) == 'bin-file':
-            userdata = load_file_pickle(userdata_storage)
-
-        return userdata
-
-    def save_userdata(userdata, userdata_storage):
-        
-        def save_file_pickle(userdata, userdata_storage):
-            import pickle
-            with open(userdata_storage, 'wb') as pickle_file:
-                pickle.dump(userdata, pickle_file)
-            dummy('saves binary userdata-file.')
-
-        if what_storagetype(userdata_storage) == 'bin-file':
-            save_file_pickle(userdata, userdata_storage)
 
     def prepare_to_work_with(username, userdata_storage):
         dummy('''
@@ -151,7 +101,34 @@ def work_with_user(username, userdata_storage):
                 dummy("ok, you chose 5")
             def work_with_report():
                 dummy("ok, you chose 6")
-            
+
+
+            def menu_selection(keyboard_items):
+                keyboard_items_prefixes = []
+                meanings = {}
+                firstTry = True
+                choice = prechoice = None
+                
+                while choice not in keyboard_items:
+                    
+                    if choice != None:
+                        if choice in keyboard_items_prefixes:
+                            prechoice = choice
+                        elif prechoice:
+                            if meaning[str(prechoice)+str(choice)] in keyboard_items:
+                                return meanings[str(prechoice)+str(choice)]
+                            else:
+                                prechoice = None
+                                firstTry = False
+                        elif meaning[choice] in keyboard_items:
+                            return meaning[choice]
+                        elif firstTry:
+                            print('... такой вариант не предлагается, будьте внимательны...')
+                            firstTry = False
+                    
+                    choice = getch()
+
+
             print('''
         1. Стремления
         2. Действия
@@ -159,7 +136,7 @@ def work_with_user(username, userdata_storage):
         4. Вера В Себя
         5. Статистика
         6. Отчитаться      F2 - Сохранить изменения
-      ~ 0. Выйти           F3 - Отменить несохранённые изменения
+  ~ или 0. Выйти           F3 - Отменить несохранённые изменения
               ''')
 
             choice = subchoice = None; firstTry = True
@@ -198,29 +175,12 @@ def work_with_user(username, userdata_storage):
     interactions_of_choice()
 
 
-
-
-
-
-
 def user_logout():
+    dummy('\f')
     dummy('''
     (user decides to log out and to give place for another user)
     ''')
     sleep(2)
-
-
-# This is just a dummy-function instead of using print with text, 
-# wich will not be needed anymore when app is further developed.
-def dummy(text):
-    print(text)
-    return
-
-# This is just a dummy-function instead of using input with text, 
-# wich will not be needed anymore when app is further developed.
-def stick(text):
-    hit = input(text)
-    return hit
 
 
 

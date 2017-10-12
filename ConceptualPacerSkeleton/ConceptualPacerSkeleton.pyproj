@@ -25,6 +25,12 @@
     <Compile Include="charcode.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="dumstick.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="module1.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="saveload.py">
       <SubType>Code</SubType>
     </Compile>
