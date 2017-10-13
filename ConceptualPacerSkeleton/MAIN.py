@@ -4,17 +4,14 @@ from dumstick import *
 from saveload import *
 from menuselect import *
 from pacerclasses import *
-
-
-class DataChunk:
-    pass
+from dataglobe import u
 
 
 
 def main():
     while True:
-        username, userdata_storage = identify_user()
-        work_with_user(username, userdata_storage)
+        identify_user()
+        work_with_user(u.name, u.storage)
         user_logout()
         
         dummy('''
@@ -30,38 +27,37 @@ def identify_user():
     (user makes his choice and succesfully logges in)
     ''')
     sleepif(1)
-    username = 'KnownUser2'
-    userdata_storage = 'User2Data.bin'
-    return username, userdata_storage
+    u.name = 'KnownUser2'
+    u.storage = 'User2Data.bin'
 
 
 def work_with_user(username, userdata_storage):
     
 
-    def prepare_to_work_with(username, userdata_storage):
+    def prepare_to_work_with():
         dummy('''
     (Pacer is preparing to work with current user...)
         ''')
         sleepif(1)
         
-        if not storage_exists(userdata_storage):
+        if not storage_exists(u.storage):
             def create_storage(username, userdata_storage):
                 dummy('... for now with default values.')
                 endeavors_of_the_user = ['Стремление1', 'Стремление2', 'Стремление3']
                 activities_of_the_user = []
                 quests_of_the_user = []
                 selfesteem_of_the_user = 9001
-                userdata = [username, endeavors_of_the_user, activities_of_the_user, 
+                userdata = [u.name, endeavors_of_the_user, activities_of_the_user, 
                             quests_of_the_user, selfesteem_of_the_user]
-                save_userdata(userdata, userdata_storage)
+                save_userdata(userdata, u.storage)
             
             dummy('creates userdata_storage...')
-            create_storage(username, userdata_storage)
+            create_storage(u.name, u.storage)
         
         userdata = load_userdata(userdata_storage)
         return userdata
     
-    userdata = prepare_to_work_with(username, userdata_storage)
+    userdata = prepare_to_work_with()
 
     dummy('''
     (Pacer prepared to work with current user, his data loaded)

@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ConceptualPacerSkeleton", "ConceptualPacerSkeleton\ConceptualPacerSkeleton.pyproj", "{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "VarUseA", "VarUseA\VarUseA.pyproj", "{8B96D545-78B2-4B28-942D-B07D6890DD48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,8 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E36A7AC-C8C2-45C3-A514-D8D67596EA18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B96D545-78B2-4B28-942D-B07D6890DD48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B96D545-78B2-4B28-942D-B07D6890DD48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
+    <ProjectGuid>8b96d545-78b2-4b28-942d-b07d6890dd48</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>MAIN.py</StartupFile>
+    <StartupFile>VarUseA.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>ConceptualPacerSkeleton</Name>
-    <RootNamespace>ConceptualPacerSkeleton</RootNamespace>
+    <Name>VarUseA</Name>
+    <RootNamespace>VarUseA</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,25 +21,13 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MAIN.py" />
-    <Compile Include="charcode.py">
+    <Compile Include="a1.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="dumstick.py">
+    <Compile Include="a2.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="menuselect.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="dataglobe.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="pacerclasses.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="saveload.py">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="VarUseA.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
