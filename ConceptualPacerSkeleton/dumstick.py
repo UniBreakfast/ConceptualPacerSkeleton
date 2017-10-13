@@ -10,3 +10,11 @@ def stick(text):
     hit = input(text)
     return hit
 
+
+from time import sleep
+
+sleepFlag = False
+
+def sleepif(seconds):
+    if sleepFlag == True:
+        sleep(seconds)

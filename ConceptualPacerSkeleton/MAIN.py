@@ -1,8 +1,14 @@
 from time import sleep
-from msvcrt import getch
 
 from dumstick import *
 from saveload import *
+from menuselect import *
+from pacerclasses import *
+
+
+class DataChunk:
+    pass
+
 
 
 def main():
@@ -14,7 +20,7 @@ def main():
         dummy('''
         (Pacer returns to identifying process)
         ''')
-        sleep(2)
+        sleepif(1)
         
 
 def identify_user():
@@ -23,7 +29,7 @@ def identify_user():
     Please SELECT user, introduce yourself by LOGIN or REGISTER new user.
     (user makes his choice and succesfully logges in)
     ''')
-    sleep(3)
+    sleepif(1)
     username = 'KnownUser2'
     userdata_storage = 'User2Data.bin'
     return username, userdata_storage
@@ -36,7 +42,7 @@ def work_with_user(username, userdata_storage):
         dummy('''
     (Pacer is preparing to work with current user...)
         ''')
-        sleep(2)
+        sleepif(1)
         
         if not storage_exists(userdata_storage):
             def create_storage(username, userdata_storage):
@@ -55,12 +61,12 @@ def work_with_user(username, userdata_storage):
         userdata = load_userdata(userdata_storage)
         return userdata
     
-    username, user_endeavors, user_activities, user_quests, user_selfesteem = prepare_to_work_with(username, userdata_storage)
+    userdata = prepare_to_work_with(username, userdata_storage)
 
     dummy('''
     (Pacer prepared to work with current user, his data loaded)
     ''')
-    sleep(2)
+    sleepif(1)
 
     
     def generate_propositions():
@@ -75,20 +81,49 @@ def work_with_user(username, userdata_storage):
     dummy('''
     (user sucessfully uses Pacer to his avantage and joy)
     ''')
-    sleep(2)
+    sleepif(1)
 
-    def interactions_of_choice():
+    def interactions_of_choice(userdata):
         
         while True:
 
-            def work_with_endeavors():
-                dummy(user_endeavors)
-                new_endeavor()
-                edit_endeavor()
-                del_endeavor()
+            def work_with_endeavors(userdata):
+                
+                while True:
+
+                    user_endeavors = userdata[1]
+                    print("\nНакоплено стремлений: %s" % len(user_endeavors))
+                    num_padding = len(str(len(user_endeavors)+1))
+                    name_padding = 0
+                    for num, endeavor in enumerate(user_endeavors):
+                        if len(endeavor.full_name) > name_padding:
+                            name_padding = len(endeavor.full_name)
+                    for num, endeavor in enumerate(user_endeavors):
+                        print('',str(num+1).rjust(num_padding),'', endeavor.full_name.ljust(name_padding), ' с', endeavor.create_date)
+
+                    choice = None
+                    numberlist = [1, 2, 3]; tens = []
+                    while choice in [None]:
+                        choice = menu_selection(numberlist + [0, '`', '+'])
+                
+                    if choice == 1:
+                        edit_endeavor(0)
+                    elif choice == 2:
+                        edit_endeavor(1)
+                    elif choice == 3:
+                        edit_endeavor(2)
+                    elif choice in [0, '`']:
+                        userdata[1] = user_endeavors
+                        break
 
 
-
+                #user_endeavors.append(Endeavor("Выучить английский язык", "Англ", "Знание английского языка откроет передо мною большие возможности по обучению и трудоустройству.", "навык", today(), ["Учиться в Duolingo", "Смотреть фильмы без перевода"]))
+                #user_endeavors.append(Endeavor("Разбогатеть", "Богат", "Богатство позволит мне обеспечить родных и близких всем необходимым и желанным", "задача", today(), ["Преподавать йогу"]))
+                #new_endeavor()
+                #edit_endeavor()
+                #del_endeavor()
+                userdata[1] = user_endeavors
+                return userdata
 
 
             def work_with_activities():
@@ -102,85 +137,51 @@ def work_with_user(username, userdata_storage):
             def work_with_report():
                 dummy("ok, you chose 6")
 
-
-            def menu_selection(keyboard_items):
-                keyboard_items_prefixes = []
-                meanings = {}
-                firstTry = True
-                choice = prechoice = None
-                
-                while choice not in keyboard_items:
-                    
-                    if choice != None:
-                        if choice in keyboard_items_prefixes:
-                            prechoice = choice
-                        elif prechoice:
-                            if meaning[str(prechoice)+str(choice)] in keyboard_items:
-                                return meanings[str(prechoice)+str(choice)]
-                            else:
-                                prechoice = None
-                                firstTry = False
-                        elif meaning[choice] in keyboard_items:
-                            return meaning[choice]
-                        elif firstTry:
-                            print('... такой вариант не предлагается, будьте внимательны...')
-                            firstTry = False
-                    
-                    choice = getch()
-
-
             print('''
         1. Стремления
         2. Действия
         3. Квесты
         4. Вера В Себя
         5. Статистика
-        6. Отчитаться      F2 - Сохранить изменения
-  ~ или 0. Выйти           F3 - Отменить несохранённые изменения
-              ''')
+        6. Отчитаться    F2 / Ctrl+S - Сохранить изменения
+    ~ / 0. Выйти         F3 / Ctrl+L - Отменить несохранённые изменения
+                  ''')
 
-            choice = subchoice = None; firstTry = True
-            while choice not in [b'1', b'2', b'3', b'4', b'5', b'6', b'0', b'`']:
-                if not choice == None:
-                    if choice == b'\x00':
-                        subchoice = b'\x00'
-                    elif choice == b'<' and subchoice == b'\x00':
-                        save_userdata([username, user_endeavors, user_activities, user_quests, user_selfesteem], userdata_storage)
-                    elif choice == b'=' and subchoice == b'\x00':
-                        load_userdata(userdata_storage)
-                    elif firstTry:
-                        dummy("incorrect choice, try again")
-                        firstTry = False
-                        subchoice = None
-                choice = getch()
-
-            if choice == b'1':
-                work_with_endeavors()
-            elif choice == b'2':
+            choice = None
+            while choice in ['F2', 'F3', 'Ctrl+S', 'Ctrl+L', None]:
+                choice = menu_selection(1, 2, 3, 4, 5, 6, 0, '`', 'F2', 'F3', 'Ctrl+S', 'Ctrl+L')
+                
+                if choice in ['F2', 'Ctrl+S']:
+                    save_userdata(userdata, userdata_storage)
+                elif choice in ['F3', 'Ctrl+L']:
+                    load_userdata(userdata_storage)
+                
+            if choice == 1:
+                userdata = work_with_endeavors(userdata)
+            elif choice == 2:
                 work_with_activities()
-            elif choice == b'3':
+            elif choice == 3:
                 work_with_quests()
-            elif choice == b'4':
+            elif choice == 4:
                 work_with_selfesteem()
-            elif choice == b'5':
+            elif choice == 5:
                 work_with_stats()
-            elif choice == b'6':
+            elif choice == 6:
                 work_with_report()
-            elif choice in [b'0', b'`']:
+            elif choice in [0, '`']:
                 dummy("ok, you chose to exit")
                 break
 
 
 
-    interactions_of_choice()
+    interactions_of_choice(userdata)
 
 
 def user_logout():
-    dummy('\f')
     dummy('''
     (user decides to log out and to give place for another user)
     ''')
-    sleep(2)
+    sleepif(1)
 
 
 

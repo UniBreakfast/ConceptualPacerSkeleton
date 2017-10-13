@@ -28,7 +28,13 @@
     <Compile Include="dumstick.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="menuselect.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="module1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pacerclasses.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="saveload.py">
