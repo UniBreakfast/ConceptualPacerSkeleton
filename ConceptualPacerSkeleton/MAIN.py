@@ -77,6 +77,12 @@ def work_with_user():
 
             def work_with_endeavors():
                 
+                def edit_endeavor(num):
+                    print('''
+ {}
+                    
+       F2 / Enter - Изменить      F8 / Delete - Удалить'''.format(u.endeavors[num-1]))
+                
                 while True:
 
                     print("\nНакоплено стремлений: %s" % len(u.endeavors))
@@ -87,21 +93,21 @@ def work_with_user():
                             name_padding = len(endeavor.full_name)
                     for num, endeavor in enumerate(u.endeavors):
                         print('',str(num+1).rjust(num_padding),'', endeavor.full_name.ljust(name_padding), ' с', endeavor.create_date)
-
-                    choice = None
-                    numberlist = [1, 2, 3]; tens = []
-                    while choice in [None]:
-                        choice = menu_selection(numberlist + [0, '`', '+'])
+                    
+                    num_list = list(range(1, len(u.endeavors)+1))
+                    choice = long_list_selection(num_list+['`', '+'])
                 
-                    if choice == 1:
-                        edit_endeavor(0)
-                    elif choice == 2:
-                        edit_endeavor(1)
-                    elif choice == 3:
-                        edit_endeavor(2)
-                    elif choice in [0, '`']:
-                        break
+                    if choice in num_list:
+                        print('откроется пункт', str(choice))
+                        edit_endeavor(choice)
 
+                    elif choice == '+':
+                        dummy('добавим новый пункт')
+                    elif choice == '`':
+                        break
+                
+                for i in range(37):
+                    u.endeavors.append(Endeavor("Муляж", "Мул", "Ненастоящее стремление.", "гирька", today()))
                 #u.endeavors.append(Endeavor("Выучить английский язык", "Англ", "Знание английского языка откроет передо мною большие возможности по обучению и трудоустройству.", "навык", today(), ["Учиться в Duolingo", "Смотреть фильмы без перевода"]))
                 #u.endeavors.append(Endeavor("Разбогатеть", "Богат", "Богатство позволит мне обеспечить родных и близких всем необходимым и желанным", "задача", today(), ["Преподавать йогу"]))
                 #new_endeavor()

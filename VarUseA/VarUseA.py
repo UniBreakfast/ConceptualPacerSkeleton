@@ -1,5 +1,8 @@
 
 
+print("1", end='aaa')
+
+
 from a2 import *
 from a1 import *
 import a2
@@ -18,21 +21,24 @@ def func_1():
     a2.var4 += 'U'
     
     a1.var = "WOW"
-
+    #print(a1)
+    #print(type(a1))
+    #print(dir(a1))
 
 
 
 def func_3():
     #func_3.var = 11111111111
      
-    def func_4():
+    def func_4(varFoo=None):
         
         #print(func_3.var)
         #func_3.var *= 2
         #print(func_3.var)
 
-
         global var1
+
+        varFoo
 
         print(func_4.var)
            
@@ -47,8 +53,10 @@ def func_3():
         
         func_5()
 
+    func_4.varFoo = print("fuck--------------------")
     func_4.var = "FACEPALM"
     func_4()
+    #func_4.varFoo
     print(a2.var4)
 
 u.name = 'Vasya'
@@ -65,3 +73,7 @@ var3 = False
 func_1()
 func_2(v)
 func_3()
+print(var4)
+
+from a2 import *
+print(var4)
