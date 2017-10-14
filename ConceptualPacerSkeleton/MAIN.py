@@ -7,7 +7,6 @@ from pacerclasses import *
 import dataglobe as u
 
 
-
 def main():
     while True:
         identify_user()
@@ -33,7 +32,6 @@ def identify_user():
 
 def work_with_user():
     
-
     def prepare_to_work_with():
         dummy('''
     (Pacer is preparing to work with current user...)
@@ -51,7 +49,6 @@ def work_with_user():
         
         load_userdata()
         
-    
     prepare_to_work_with()
 
     dummy('''
@@ -59,7 +56,7 @@ def work_with_user():
     ''')
     sleepif(1)
 
-    
+    #propositions
     def generate_propositions():
         dummy("checking for certain conditions...")
 
