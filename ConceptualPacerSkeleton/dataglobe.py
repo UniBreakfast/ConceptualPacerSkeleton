@@ -1,1 +1,4 @@
-class u: pass
+endeavors = []
+activities = []
+quests = []
+selfesteem = 5

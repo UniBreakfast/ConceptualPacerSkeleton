@@ -22,7 +22,7 @@
         <Foreground Type="CT_RAW" Source="FF252526" />
       </Color>
       <Color Name="NumberedListItemHover">
-        <Background Type="CT_RAW" Source="FF3E3E40" />
+        <Background Type="CT_RAW" Source="FF3E403E" />
       </Color>
       <Color Name="NumberedListItemHoverBorder">
         <Foreground Type="CT_RAW" Source="FF3E3E40" />
@@ -1957,10 +1957,10 @@
         <Background Type="CT_RAW" Source="66007ACC" />
       </Color>
       <Color Name="InnerTabActiveBackground">
-        <Background Type="CT_RAW" Source="FF3E3E40" />
+        <Background Type="CT_RAW" Source="FFE41300" />
       </Color>
       <Color Name="InnerTabActiveBorder">
-        <Background Type="CT_RAW" Source="FF3E3E40" />
+        <Background Type="CT_RAW" Source="FFE41300" />
       </Color>
       <Color Name="InnerTabActiveText">
         <Background Type="CT_RAW" Source="FFF1F1F1" />
@@ -6639,7 +6639,7 @@
         <Background Type="CT_RAW" Source="00000000" />
       </Color>
       <Color Name="WindowButtonHoverBorder">
-        <Background Type="CT_RAW" Source="FF3E3E40" />
+        <Background Type="CT_RAW" Source="FF403E3E" />
       </Color>
       <Color Name="WindowButtonDownBorder">
         <Background Type="CT_RAW" Source="FF007ACC" />

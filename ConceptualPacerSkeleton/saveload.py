@@ -1,61 +1,58 @@
 from dumstick import *
+import dataglobe as u
 
 
 
-def storage_exists(userdata_storage):
+def storage_exists():
     dummy('checks if userdata_storage exists...')
-    if what_storagetype(userdata_storage) in ['bin-file', 'txt-file']:
+    if what_storagetype() in ['bin-file', 'txt-file']:
         try:
-            with open(userdata_storage) as temp:
-                flag = True
+            with open(u.storage) as temp:
                 dummy('... it does.')
+                return True
         except FileNotFoundError:
-            flag = False
             dummy('... it does not.')
-    return flag
+            return False
 
 
-def what_storagetype(userdata_storage):
-    if userdata_storage.endswith('.bin'):
+def what_storagetype():
+    if u.storage.endswith('.bin'):
         type ='bin-file'
-    elif userdata_storage.endswith('.txt'):
+    elif u.storage.endswith('.txt'):
         type ='txt-file'
     return type
 
 
-def load_userdata(userdata_storage):
+def load_userdata():
         
-    def load_DB(userdata_storage):
+    def load_DB():
         pass
         
-    def load_file_txt(userdata_storage):
-        userdata = []
-        return userdata
+    def load_file_txt():
+        pass
 
-    def load_file_pickle(userdata_storage):
+    def load_file_pickle():
         import pickle
-        with open(userdata_storage, 'rb') as pickle_file:
-            userdata = pickle.load(pickle_file)
+        with open(u.storage, 'rb') as pickle_file:
+            u.name, u.endeavors, u.activities, u.quests, u.selfesteem = pickle.load(pickle_file)
         dummy('loads userdata from binary userdata-file...')
-        return userdata
 
-    def load_cloud(userdata_storage):
+    def load_cloud():
         pass
 
-    if what_storagetype(userdata_storage) == 'bin-file':
-        userdata = load_file_pickle(userdata_storage)
-
-    return userdata
+    if what_storagetype() == 'bin-file':
+        load_file_pickle()
 
 
-def save_userdata(userdata, userdata_storage):
+
+def save_userdata():
         
-    def save_file_pickle(userdata, userdata_storage):
+    def save_file_pickle():
         import pickle
-        with open(userdata_storage, 'wb') as pickle_file:
-            pickle.dump(userdata, pickle_file)
+        with open(u.storage, 'wb') as pickle_file:
+            pickle.dump([u.name, u.endeavors, u.activities, u.quests, u.selfesteem], pickle_file)
         dummy('saves binary userdata-file.')
 
-    if what_storagetype(userdata_storage) == 'bin-file':
-        save_file_pickle(userdata, userdata_storage)
+    if what_storagetype() == 'bin-file':
+        save_file_pickle()
 

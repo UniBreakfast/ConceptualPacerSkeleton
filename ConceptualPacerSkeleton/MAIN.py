@@ -4,14 +4,14 @@ from dumstick import *
 from saveload import *
 from menuselect import *
 from pacerclasses import *
-from dataglobe import u
+import dataglobe as u
 
 
 
 def main():
     while True:
         identify_user()
-        work_with_user(u.name, u.storage)
+        work_with_user()
         user_logout()
         
         dummy('''
@@ -31,7 +31,7 @@ def identify_user():
     u.storage = 'User2Data.bin'
 
 
-def work_with_user(username, userdata_storage):
+def work_with_user():
     
 
     def prepare_to_work_with():
@@ -40,24 +40,19 @@ def work_with_user(username, userdata_storage):
         ''')
         sleepif(1)
         
-        if not storage_exists(u.storage):
-            def create_storage(username, userdata_storage):
+        if not storage_exists():
+            def create_storage():
                 dummy('... for now with default values.')
-                endeavors_of_the_user = ['Стремление1', 'Стремление2', 'Стремление3']
-                activities_of_the_user = []
-                quests_of_the_user = []
-                selfesteem_of_the_user = 9001
-                userdata = [u.name, endeavors_of_the_user, activities_of_the_user, 
-                            quests_of_the_user, selfesteem_of_the_user]
-                save_userdata(userdata, u.storage)
+                
+                save_userdata()
             
             dummy('creates userdata_storage...')
-            create_storage(u.name, u.storage)
+            create_storage()
         
-        userdata = load_userdata(userdata_storage)
-        return userdata
+        load_userdata()
+        
     
-    userdata = prepare_to_work_with()
+    prepare_to_work_with()
 
     dummy('''
     (Pacer prepared to work with current user, his data loaded)
@@ -79,22 +74,21 @@ def work_with_user(username, userdata_storage):
     ''')
     sleepif(1)
 
-    def interactions_of_choice(userdata):
+    def interactions_of_choice():
         
         while True:
 
-            def work_with_endeavors(userdata):
+            def work_with_endeavors():
                 
                 while True:
 
-                    user_endeavors = userdata[1]
-                    print("\nНакоплено стремлений: %s" % len(user_endeavors))
-                    num_padding = len(str(len(user_endeavors)+1))
+                    print("\nНакоплено стремлений: %s" % len(u.endeavors))
+                    num_padding = len(str(len(u.endeavors)+1))
                     name_padding = 0
-                    for num, endeavor in enumerate(user_endeavors):
+                    for num, endeavor in enumerate(u.endeavors):
                         if len(endeavor.full_name) > name_padding:
                             name_padding = len(endeavor.full_name)
-                    for num, endeavor in enumerate(user_endeavors):
+                    for num, endeavor in enumerate(u.endeavors):
                         print('',str(num+1).rjust(num_padding),'', endeavor.full_name.ljust(name_padding), ' с', endeavor.create_date)
 
                     choice = None
@@ -109,17 +103,13 @@ def work_with_user(username, userdata_storage):
                     elif choice == 3:
                         edit_endeavor(2)
                     elif choice in [0, '`']:
-                        userdata[1] = user_endeavors
                         break
 
-
-                #user_endeavors.append(Endeavor("Выучить английский язык", "Англ", "Знание английского языка откроет передо мною большие возможности по обучению и трудоустройству.", "навык", today(), ["Учиться в Duolingo", "Смотреть фильмы без перевода"]))
-                #user_endeavors.append(Endeavor("Разбогатеть", "Богат", "Богатство позволит мне обеспечить родных и близких всем необходимым и желанным", "задача", today(), ["Преподавать йогу"]))
+                #u.endeavors.append(Endeavor("Выучить английский язык", "Англ", "Знание английского языка откроет передо мною большие возможности по обучению и трудоустройству.", "навык", today(), ["Учиться в Duolingo", "Смотреть фильмы без перевода"]))
+                #u.endeavors.append(Endeavor("Разбогатеть", "Богат", "Богатство позволит мне обеспечить родных и близких всем необходимым и желанным", "задача", today(), ["Преподавать йогу"]))
                 #new_endeavor()
                 #edit_endeavor()
                 #del_endeavor()
-                userdata[1] = user_endeavors
-                return userdata
 
 
             def work_with_activities():
@@ -148,12 +138,12 @@ def work_with_user(username, userdata_storage):
                 choice = menu_selection(1, 2, 3, 4, 5, 6, 0, '`', 'F2', 'F3', 'Ctrl+S', 'Ctrl+L')
                 
                 if choice in ['F2', 'Ctrl+S']:
-                    save_userdata(userdata, userdata_storage)
+                    save_userdata()
                 elif choice in ['F3', 'Ctrl+L']:
-                    load_userdata(userdata_storage)
+                    load_userdata()
                 
             if choice == 1:
-                userdata = work_with_endeavors(userdata)
+                work_with_endeavors()
             elif choice == 2:
                 work_with_activities()
             elif choice == 3:
@@ -170,7 +160,7 @@ def work_with_user(username, userdata_storage):
 
 
 
-    interactions_of_choice(userdata)
+    interactions_of_choice()
 
 
 def user_logout():
