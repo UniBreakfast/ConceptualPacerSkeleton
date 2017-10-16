@@ -20,7 +20,13 @@
     <DebugSymbols>true</DebugSymbols>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'a' ">
+    <OutputPath>bin\a\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
+    <Compile Include="handledinput.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MAIN.py" />
     <Compile Include="charcode.py">
       <SubType>Code</SubType>
@@ -28,10 +34,25 @@
     <Compile Include="dumstick.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="menuselect.py">
+    <Compile Include="keychoice.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="dataglobe.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="menuitems.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="module1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="keymapper.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SANDBOX.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="snake.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pacerclasses.py">

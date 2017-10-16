@@ -20,6 +20,9 @@
     <DebugSymbols>true</DebugSymbols>
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'a' ">
+    <OutputPath>bin\a\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="a1.py">
       <SubType>Code</SubType>

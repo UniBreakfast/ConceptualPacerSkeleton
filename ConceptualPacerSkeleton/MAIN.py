@@ -2,7 +2,7 @@ from time import sleep
 
 from dumstick import *
 from saveload import *
-from menuselect import *
+from keychoice import *
 from pacerclasses import *
 import dataglobe as u
 
@@ -67,7 +67,7 @@ def work_with_user():
     show_propositions()
         
     dummy('''
-    (user sucessfully uses Pacer to his avantage and joy)
+    (user sucessfully uses Pacer to his advantage and joy)
     ''')
     sleepif(1)
 
@@ -78,10 +78,22 @@ def work_with_user():
             def work_with_endeavors():
                 
                 def edit_endeavor(num):
+                    num-=1
                     print('''
  {}
                     
-       F2 / Enter - Изменить      F8 / Delete - Удалить'''.format(u.endeavors[num-1]))
+    ~ / Esc - Назад       F2 / Enter - Изменить       F8 / Delete - Удалить'''.format(u.endeavors[num]))
+                    choice = None
+                    while choice in [None, 'Enter', 'F2']:
+                        choice = key_choice('Enter', 'F2', 'Esc', '`', 'F8', 'Delete')
+                        if choice in ['Enter', 'F2']:
+                            dummy(" начнём редактировать это стремление")
+
+                    if choice in ['F8', 'Delete']:
+                        dummy(" это стремление удалено")
+                        del u.endeavors[num]
+                    elif choice in ['Esc', '`']:
+                        pass
                 
                 while True:
 
@@ -95,7 +107,7 @@ def work_with_user():
                         print('',str(num+1).rjust(num_padding),'', endeavor.full_name.ljust(name_padding), ' с', endeavor.create_date)
                     
                     num_list = list(range(1, len(u.endeavors)+1))
-                    choice = long_list_selection(num_list+['`', '+'])
+                    choice = long_list_selection(num_list+['`', 'Esc', '+'])
                 
                     if choice in num_list:
                         print('откроется пункт', str(choice))
@@ -132,17 +144,17 @@ def work_with_user():
         3. Квесты
         4. Вера В Себя
         5. Статистика
-        6. Отчитаться    F2 / Ctrl+S - Сохранить изменения
-    ~ / 0. Выйти         F3 / Ctrl+L - Отменить несохранённые изменения
+        6. Отчитаться    F6 / Ctrl+S - Сохранить изменения
+    ~ / 0. Выйти         F7 / Ctrl+L - Отменить несохранённые изменения
                   ''')
 
             choice = None
-            while choice in ['F2', 'F3', 'Ctrl+S', 'Ctrl+L', None]:
-                choice = menu_selection(1, 2, 3, 4, 5, 6, 0, '`', 'F2', 'F3', 'Ctrl+S', 'Ctrl+L')
+            while choice in ['F6', 'F7', 'Ctrl+S', 'Ctrl+L', None]:
+                choice = key_choice(1, 2, 3, 4, 5, 6, 0, '`', 'Esc', 'F6', 'F7', 'Ctrl+S', 'Ctrl+L')
                 
-                if choice in ['F2', 'Ctrl+S']:
+                if choice in ['F6', 'Ctrl+S']:
                     save_userdata()
-                elif choice in ['F3', 'Ctrl+L']:
+                elif choice in ['F7', 'Ctrl+L']:
                     load_userdata()
                 
             if choice == 1:
@@ -157,7 +169,7 @@ def work_with_user():
                 work_with_stats()
             elif choice == 6:
                 work_with_report()
-            elif choice in [0, '`']:
+            elif choice in [0, '`', 'Esc']:
                 dummy("ok, you chose to exit")
                 break
 
