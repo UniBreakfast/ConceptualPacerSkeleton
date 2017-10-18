@@ -85,24 +85,71 @@ class Board:
 
     def draw(self):
         
-        move_cursor(-self.margins.height)
+        marg = self.margins
+        pal  = self.palette
+
+        move_cursor(-marg.height)
         
-        def board(marg, col):
+        col = self.palette.board_colors.background
             
-            if marg.width == 80:
-                print(col+'\r'+marg.height*marg.width*' ')
-            else:
-                print(marg.left_border*' '+col+
-                      marg.height*(marg.width*' '+DOWN+
-                      marg.width*LEFT))
+        if marg.width == 80:
+            print(col+'\r'+marg.height*marg.width*' ')
+        else:
+            print(marg.left_border*' '+col+
+                    marg.height*(marg.width*' '+DOWN+
+                    marg.width*LEFT))
             
-            move_cursor(-marg.height)
+        move_cursor(-marg.height)
         
-        board(self.margins, self.palette.board_colors.background)
 
         for frameline in self.framelines:
 
             if len(frameline):
+
+                if type(frameline[0]) is MenuItem:
+
+                    print()
+
+                    marg.longest_key_in_column
+                    marg.axis
+                    pal.board_colors
+                    pal.button_colors
+                    pal.selected_button_colors
+                    self.selected_item_id
+                    
+                    frameline[0].color
+                    frameline[0].selected_color
+                    frameline[0].hint_color
+                    frameline[0].key
+                    frameline[0].nametext
+                    frameline[0].current_id
+                    frameline[0].current_location
+
+                else:
+
+                    for element in frameline:
+
+                        frameline.justify
+                        frameline.filled
+                        frameline.interval
+                        
+                        element.color
+                        element.selected_color
+                        element.key
+                        element.nametext
+                        element.current_id
+                        element.current_location
+                        
+                        pal.board_colors
+                        pal.button_colors
+                        pal.selected_button_colors
+                        pal.field_colors
+                        pal.selected_field_colors
+                        self.selected_item_id
+                        
+
+
+
 
 
 
@@ -119,9 +166,12 @@ class Board:
 
 class FrameLine(list):
 
-    def __init__(self, justify='center'):
+    def __init__(self, justify='center', interval=3):
         
-        self.justify = justify
+        self.justify  = justify
+        self.interval = interval
+
+        self.filled = 0
 
 
 
@@ -130,60 +180,92 @@ class FrameLine(list):
 
 class Element:
 
-    def __init__(self, type, nametext,  invisible=False,  key =None,
-                       command     =None,  default_params     =None,
-                       alt_command =None,  alt_default_params =None,
-                       color       =None,  selected_color     =None):
+    def __init__(self, nametext):
         
-        self.type               = type
-        self.nametext           = nametext
-        self.invisible          = invisible
+        self.nametext = nametext
+
+
+class Label(Element):
+
+    def __init__(self, nametext, colors=None):
+        super().__init__(nametext)
+
+        self.colors = colors
+        
+        self.width = len(nametext)
+
+
+class Button(Element):
+
+    def __init__(self, nametext, command, default_params, key=None, 
+                 alt_command=None, alt_default_params=None, 
+                 colors=None, selected_colors=None):
+        
+        super().__init__(nametext)
+        
         self.key                = key
         self.command            = command
         self.default_params     = default_params
         self.alt_command        = alt_command
         self.alt_default_params = alt_default_params
-        self.color              = color
-        self.selected_color     = selected_color
+        self.colors             = colors
+        self.selected_colors    = selected_colors
+
+        self.current_id       = None
+        self.current_location = None
+
+        self.width = (1+len(key) if key else 0) + 1+len(nametext)+1
         
-        self.lastID        = None
-        self.last_location = None
+
+class MenuItem(Button):
+
+    def __init__(self, nametext, command, default_params, key=None, 
+                 alt_command=None, alt_default_params=None, 
+                 colors=None, selected_colors=None, hint_colors=None):
+        
+        super().__init__(nametext, command, default_params, key, 
+                         alt_command, alt_default_params, 
+                         colors, selected_colors)
+
+        self.hint_colors = hint_colors
+
+        self.current_id       = None
+        self.current_location = None
 
 
+class HotKey(Element):
 
-class Label(Element):
+    def __init__(self, nametext, key, command, default_params):
+        super().__init__(nametext)
+        
+        self.key            = key
+        self.command        = command
+        self.default_params = default_params
 
-    def __init__(self, type, nametext):
-        super().__init__(type, nametext)
-
-
-
-class Button(Element):
-
-    def __init__(self, type, nametext):
-        super().__init__(type, nametext)
-
-
-
-class MenuItem(Element):
-
-    def __init__(self, type, nametext):
-        super().__init__(type, nametext)
-
+        self.current_id = None
 
 
 class Field(Element):
 
-    def __init__(self, type, nametext):
-        super().__init__(type, nametext)
+    def __init__(self, nametext, width=None, key=None, 
+                 colors=None, selected_colors=None):
+        super().__init__(nametext)
+        
+        self.key             = key
+        self.colors          = colors
+        self.selected_colors = selected_colors
 
-
+        self.width = width    if width    else 1+len(nametext)+2
+        
+        self.current_id       = None
+        self.current_location = None
+        
 
 class Text(Element):
 
-    def __init__(self, type, nametext):
-        super().__init__(type, nametext)
+    def __init__(self, nametext, width=None, colors=None):
+        super().__init__(nametext)
+        
+        self.colors = colors
 
-
-
-class HotKey(Element):
+        self.width = 0
