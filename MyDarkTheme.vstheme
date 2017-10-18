@@ -1134,11 +1134,11 @@
         <Foreground Type="CT_RAW" Source="FFADC0D3" />
       </Color>
       <Color Name="MarkerFormatDefinition/FindHighlight">
-        <Background Type="CT_RAW" Source="FF773800" />
+        <Background Type="CT_RAW" Source="FF0300FF" />
         <Foreground Type="CT_INVALID" Source="00000000" />
       </Color>
       <Color Name="MarkerFormatDefinition/ScopeHighlight">
-        <Background Type="CT_RAW" Source="FF0F202D" />
+        <Background Type="CT_RAW" Source="FF2D0F2B" />
         <Foreground Type="CT_INVALID" Source="00000000" />
       </Color>
       <Color Name="Excluded Code">
@@ -6355,7 +6355,7 @@
         <Foreground Type="CT_INVALID" Source="00000000" />
       </Color>
       <Color Name="Brace Matching (Rectangle)">
-        <Background Type="CT_RAW" Source="FF0E4583" />
+        <Background Type="CT_RAW" Source="FF27F1EB" />
         <Foreground Type="CT_INVALID" Source="00000000" />
       </Color>
       <Color Name="Definition Window Background">

@@ -37,7 +37,10 @@
 #print(x.name)
 #print(type(x))
 
-def kwarg_pack(*kwarg)
 
-x = (end='wow')
-print(x)
+from consoleui import *
+
+main_menu = Board()
+
+main_menu()
+
