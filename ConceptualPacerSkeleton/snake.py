@@ -4,6 +4,7 @@ cr.init()
 from msvcrt import getch
 
 
+
 UP = '\x1b[1A'
 DOWN = '\x1b[1B'
 RIGHT = '\x1b[1C'

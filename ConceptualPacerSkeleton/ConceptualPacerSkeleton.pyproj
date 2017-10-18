@@ -24,6 +24,9 @@
     <OutputPath>bin\a\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="consoleui.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="handledinput.py">
       <SubType>Code</SubType>
     </Compile>
