@@ -55,6 +55,9 @@
     <Compile Include="consoleui.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="module2.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SANDBOX.py">
       <SubType>Code</SubType>
     </Compile>

@@ -38,35 +38,44 @@
 #print(type(x))
 
 
+
+
+
+
 from consoleui import *
 
 main_menu = Board(height=10, indent=7)
 
 item1 = MenuItem('Jeronimo', print, (), 'Escape')
+item2 = MenuItem('Jeronimo', print, (), 'Escape')
+item3 = MenuItem('Jeronimo', print, (), 'Escape')
 button1 = Button('Jeronimo', print, (), 'Escape')
 button2 = Button('Jeronimo', print, (), 'Escape')
 
 
 main_menu.framelines.append(FrameLine())
 main_menu.framelines[0].append(item1)
+main_menu.framelines.append(FrameLine())
+main_menu.framelines[1].append(item2)
+main_menu.framelines.append(FrameLine())
+main_menu.framelines[2].append(item3)
 
-main_menu.framelines.append(FrameLine())
-main_menu.framelines.append(FrameLine())
-main_menu.framelines[2].append(button1)
-main_menu.framelines[2].append(button2)
-main_menu.framelines[2].append(button2)
+#main_menu.framelines[2].append(button1)
+#main_menu.framelines[2].append(button2)
+#main_menu.framelines[2].append(button2)
 
 print(main_menu.palette)
 
+#print(main_menu.margins)
+
+#print(main_menu.framelines[0])
+#print(main_menu.framelines[1])
+#print(main_menu.framelines[2])
+
+
+
 print(main_menu.margins)
 
-print(main_menu.framelines[0])
-print(main_menu.framelines[1])
-print(main_menu.framelines[2])
-
-main_menu.introspection()
-
-print(main_menu.margins)
 
 main_menu()
 

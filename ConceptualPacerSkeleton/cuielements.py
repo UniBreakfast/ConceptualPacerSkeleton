@@ -1,5 +1,4 @@
-import colorama
-colorama.init()
+import colorama; colorama.init()
 
 F_WHITE   = '\x1b[37;1m';  F_DIM_WHITE   = '\x1b[37m';  B_DIM_WHITE   = '\x1b[47m'
 F_YELLOW  = '\x1b[33;1m';  F_DIM_YELLOW  = '\x1b[33m';  B_DIM_YELLOW  = '\x1b[43m'
@@ -30,8 +29,8 @@ def move_cursor(y=0, x=0):
     if   x > 0:     print(end=RIGHT*x)
     elif x < 0:     print(end=LEFT*-x)
 
-def dye_rect(y=1, x=1):
-    print((x*' '+x*LEFT+DOWN)*y)
+def dye_rect(color, x=1, y=1, indent=0):
+    print(indent*RIGHT+color+(x*' '+x*LEFT+DOWN)*(y-1)+RESET_COLORS)
 
 
 
@@ -45,6 +44,9 @@ class ColorPair:
     def __repr__(self):
         return self.background+self.foreground+ \
     '('+color_dic[self.background]+', '+color_dic[self.foreground]+')'+RESET_COLORS
+
+    def __str__(self):
+        return self.background+self.foreground
 
 
 class Palette:
@@ -67,11 +69,11 @@ class Palette:
  button_colors          : %s,
  selected_field_colors  : %s,
  selected_button_colors : %s}''' \
-                   % (str(self.board_colors),
-                      str(self.field_colors),
-                      str(self.button_colors),
-                      str(self.selected_field_colors),
-                      str(self.selected_button_colors))
+                   % (repr(self.board_colors),
+                      repr(self.field_colors),
+                      repr(self.button_colors),
+                      repr(self.selected_field_colors),
+                      repr(self.selected_button_colors))
 
 
 class Margins:

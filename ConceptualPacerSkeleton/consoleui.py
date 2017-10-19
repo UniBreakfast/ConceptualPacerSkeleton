@@ -16,16 +16,28 @@ class Board:
         self.framelines = []
         self.hotkeys    = []
         
-        self.selected_item_id = None
+        self.selected_item_id = 2
         self.current_relline  = 0       # relative line number
         self.key_dictionary   = {}
 
         if title:
             pass
 
-    
+    def give_ids(self):
+        id = 0
+        for frameline in self.framelines:
+            for element in frameline:
+                if type(element) in [MenuItem, Button, Field]:
+                    id += 1; element.current_id = id
+        for hotkey in self.hotkeys:
+            id += 1; hotkey.current_id = id
+                
+        
+        pass
     
     def introspection(self):
+
+        self.give_ids()
 
         marg = self.margins
 
@@ -62,50 +74,54 @@ class Board:
 
     def draw(self):
         
+        self.introspection()
+
         marg = self.margins
         pal  = self.palette
 
         move_cursor(-marg.height)
-        
+
         col = self.palette.board_colors.background
             
         if marg.width == 80:
-            print(end=col+'\r'+marg.height*marg.width*' ')
+            print(end=col+'\r'+marg.height*marg.width*' '+RESET_COLORS)
         else:
-            print(end=marg.indent*' '+col+
-                      marg.height*(marg.width*' '+DOWN+
-                      marg.width*LEFT))
+            dye_rect(col, marg.width, marg.height, marg.indent)
             
         move_cursor(-marg.height)
         
 
         for frameline in self.framelines:
 
-            print('@')
-            
-            if len(frameline):
-
+            if not len(frameline): print()
+            else:
                 if type(frameline[0]) is MenuItem:
 
+                    h = frameline[0].hint_colors
+                    h = str(h) if h else str(pal.board_colors)
                     
+                    b = frameline[0].colors
+                    b = str(b) if b else str(pal.button_colors)
 
-                    marg.longest_item_key
-                    marg.axis
-                    pal.board_colors
-                    pal.button_colors
-                    pal.selected_button_colors
-                    self.selected_item_id
+                    s = frameline[0].selected_colors
+                    s = str(s) if s else str(pal.selected_button_colors)
+
+                    cid = frameline[0].current_id
+                    sid = self.selected_item_id
+
+                    b = s if cid == sid else b
+
+                    a = marg.axis
+                    l = marg.longest_item_key
+                    i = marg.indent
                     
-                    frameline[0].colors
-                    frameline[0].selected_colors
-                    frameline[0].hint_colors
-                    frameline[0].key
-                    frameline[0].nametext
-                    frameline[0].current_id
-                    frameline[0].current_location
-
-                    goto_next_line = None
-
+                    k = frameline[0].key
+                    d = '. ' if type(k) is int else ' -'
+                    d = d+' ' if cid != sid else d
+                    
+                    t = frameline[0].nametext
+                    t = ' '+t+' ' if cid == sid else t
+                    print((a-l-3)*RIGHT + h+k.rjust(l)+d + b+t +RESET_COLORS)
                 else:
 
                     for element in frameline:
@@ -130,6 +146,7 @@ class Board:
                         
                     goto_next_line = None
 
+            
 
 
 
@@ -139,7 +156,7 @@ class Board:
     def __call__(self):
         
         if self.transition == 'roll':   move_cursor(self.margins.height)
-
+        
         self.draw()
 
 
