@@ -1,65 +1,4 @@
-import colorama
-colorama.init()
-
-F_WHITE   = '\x1b[37;1m';  F_DIM_WHITE   = '\x1b[37m';  B_DIM_WHITE   = '\x1b[47m'
-F_YELLOW  = '\x1b[33;1m';  F_DIM_YELLOW  = '\x1b[33m';  B_DIM_YELLOW  = '\x1b[43m'
-F_GREEN   = '\x1b[32;1m';  F_DIM_GREEN   = '\x1b[32m';  B_DIM_GREEN   = '\x1b[42m'
-F_CYAN    = '\x1b[36;1m';  F_DIM_CYAN    = '\x1b[36m';  B_DIM_CYAN    = '\x1b[46m'
-F_BLUE    = '\x1b[34;1m';  F_DIM_BLUE    = '\x1b[34m';  B_DIM_BLUE    = '\x1b[44m'
-F_MAGENTA = '\x1b[35;1m';  F_DIM_MAGENTA = '\x1b[35m';  B_DIM_MAGENTA = '\x1b[45m'
-F_RED     = '\x1b[31;1m';  F_DIM_RED     = '\x1b[31m';  B_DIM_RED     = '\x1b[41m'
-F_GREY    = '\x1b[30;1m';  F_BLACK       = '\x1b[30m';  B_BLACK       = '\x1b[30m'
-
-UP = '\x1b[1A';     DOWN = '\x1b[1B';      RIGHT = '\x1b[1C';     LEFT = '\x1b[1D'
-
-def move_cursor(y=0, x=0):
-    if   y > 0:     print(end=DOWN*y)
-    elif y < 0:     print(end=UP* -y)
-    if   x > 0:     print(end=RIGHT*x)
-    elif x < 0:     print(end=LEFT*-x)
-
-def dye_rect(y=1, x=1):
-    print((x*' '+x*LEFT+DOWN)*y)
-
-
-
-class ColorPair:
-
-    def __init__(self, background, foreground):
-        
-        self.background = background
-        self.foreground = foreground
-
-
-
-class Palette:
-
-    def __init__(self, board_colors           =ColorPair(B_DIM_GREEN,  F_DIM_WHITE),
-                       field_colors           =ColorPair(B_BLACK,      F_DIM_WHITE),
-                       button_colors          =ColorPair(B_DIM_YELLOW, F_BLACK),
-                       selected_field_colors  =ColorPair(B_DIM_BLUE,   F_WHITE),
-                       selected_button_colors =ColorPair(B_DIM_RED,    F_YELLOW)):
-        
-        self.board_colors           = board_colors
-        self.field_colors           = field_colors
-        self.button_colors          = button_colors
-        self.selected_field_colors  = selected_field_colors
-        self.selected_button_colors = selected_button_colors
-
-
-
-class Margins:
-
-    def __init__(self):
-        
-        self.left_border            = 7
-        self.right_border           = 79
-        self.axis                   = 35
-        self.longest_key_in_column  = 0
-        self.longest_name_in_column = 1
-        self.height                 = 3
-        self.width                  = 60
-
+from cuielements import *
 
 
 
@@ -67,13 +6,15 @@ class Margins:
 
 class Board:
 
-    def __init__(self, title=None, palette=Palette(), transition='roll'):
+    def __init__(self, title=None, palette=Palette(), 
+                 transition='roll', width=None, height=None, indent=None):
         
         self.palette    = palette
-        self.margins    = Margins()
+        self.margins    = Margins(indent, width, height)
         self.transition = transition
         
         self.framelines = []
+        self.hotkeys    = []
         
         self.selected_item_id = None
         self.current_relline  = 0       # relative line number
@@ -81,6 +22,42 @@ class Board:
 
         if title:
             pass
+
+    
+    
+    def introspection(self):
+
+        marg = self.margins
+
+        for frameline in self.framelines:
+            frameline.introspection()
+
+        marg.height = marg.f_height if marg.f_height else len(self.framelines)
+        
+        marg.longest_item_key  = 0
+        marg.longest_item_name = 0
+        for frameline in self.framelines:
+            if len(frameline) and type(frameline[0]) is MenuItem:
+                if len(frameline[0].key) > marg.longest_item_key:
+                    marg.longest_item_key = len(frameline[0].key)
+                if len(frameline[0].nametext) > marg.longest_item_name:
+                    marg.longest_item_name = len(frameline[0].nametext)
+        
+        if marg.f_width: marg.width = marg.f_width  
+        else: 
+            marg.width = marg.longest_item_key + marg.longest_item_name + 4
+            for frameline in self.framelines:
+                if frameline.filled > marg.width:
+                    marg.width = frameline.filled
+            marg.width += 2
+        
+        if marg.f_indent: marg.indent = marg.f_indent
+        else: marg.indent = (80 - marg.width) // 2
+        
+        marg.axis = marg.indent + (marg.width - (marg.longest_item_key + marg.longest_item_name + 3)) // 2 + marg.longest_item_key + 3
+        
+        marg.right_border = marg.indent + marg.width
+
 
 
     def draw(self):
@@ -93,37 +70,41 @@ class Board:
         col = self.palette.board_colors.background
             
         if marg.width == 80:
-            print(col+'\r'+marg.height*marg.width*' ')
+            print(end=col+'\r'+marg.height*marg.width*' ')
         else:
-            print(marg.left_border*' '+col+
-                    marg.height*(marg.width*' '+DOWN+
-                    marg.width*LEFT))
+            print(end=marg.indent*' '+col+
+                      marg.height*(marg.width*' '+DOWN+
+                      marg.width*LEFT))
             
         move_cursor(-marg.height)
         
 
         for frameline in self.framelines:
 
+            print('@')
+            
             if len(frameline):
 
                 if type(frameline[0]) is MenuItem:
 
-                    print()
+                    
 
-                    marg.longest_key_in_column
+                    marg.longest_item_key
                     marg.axis
                     pal.board_colors
                     pal.button_colors
                     pal.selected_button_colors
                     self.selected_item_id
                     
-                    frameline[0].color
-                    frameline[0].selected_color
-                    frameline[0].hint_color
+                    frameline[0].colors
+                    frameline[0].selected_colors
+                    frameline[0].hint_colors
                     frameline[0].key
                     frameline[0].nametext
                     frameline[0].current_id
                     frameline[0].current_location
+
+                    goto_next_line = None
 
                 else:
 
@@ -133,8 +114,8 @@ class Board:
                         frameline.filled
                         frameline.interval
                         
-                        element.color
-                        element.selected_color
+                        element.colors
+                        element.selected_colors
                         element.key
                         element.nametext
                         element.current_id
@@ -147,7 +128,7 @@ class Board:
                         pal.selected_field_colors
                         self.selected_item_id
                         
-
+                    goto_next_line = None
 
 
 
@@ -162,110 +143,74 @@ class Board:
         self.draw()
 
 
+    def empty_framelines_append(self, num=1):
+        for i in range(num):    self.framelines.append(FrameLine())
 
+    def empty_framelines_insert(self, index, num=1):
+        for i in range(num):    self.framelines.insert(index, FrameLine())
 
-class FrameLine(list):
+    def element_in_frameline_append(self, element, index_f):
+        self.framelines[index_f].append(element)
 
-    def __init__(self, justify='center', interval=3):
+    def element_in_frameline_insert(self, element, index_f, index_e):
+        self.framelines[index_f].insert(index_e, element)
+
+    def element_in_frameline_place(self, element, index_f, pos):
+        self.framelines[index_f].justify = 'left'
+        self.framelines[index_f].append(element)
+        el_pos = len(self.framelines[index_f])-1
+        self.framelines[index_f].positions[el_pos] = pos
         
-        self.justify  = justify
-        self.interval = interval
+    def element_in_frameline_add(self, element, index_f):
 
-        self.filled = 0
+        if type(element) is MenuItem:
+            if len(self.framelines[index_f]):
+                empty_framelines_insert(index_f)
+            self.framelines[index_f].append(element)
 
+        elif type(element) in [Button, Label, Field]:
+            if self.framelines[index_f].filled + \
+               self.framelines[index_f].interval + len(element.width) < \
+               self.margins.width:
+                self.framelines[index_f].append(element)
+            else:
+                empty_framelines_insert(index_f+1)
+                self.framelines[index_f+1].append(element)
 
+        elif type(element) is HotKey:
+            self.hotkeys.append(element)
 
-
-
-
-class Element:
-
-    def __init__(self, nametext):
-        
-        self.nametext = nametext
-
-
-class Label(Element):
-
-    def __init__(self, nametext, colors=None):
-        super().__init__(nametext)
-
-        self.colors = colors
-        
-        self.width = len(nametext)
-
-
-class Button(Element):
-
-    def __init__(self, nametext, command, default_params, key=None, 
-                 alt_command=None, alt_default_params=None, 
-                 colors=None, selected_colors=None):
-        
-        super().__init__(nametext)
-        
-        self.key                = key
-        self.command            = command
-        self.default_params     = default_params
-        self.alt_command        = alt_command
-        self.alt_default_params = alt_default_params
-        self.colors             = colors
-        self.selected_colors    = selected_colors
-
-        self.current_id       = None
-        self.current_location = None
-
-        self.width = (1+len(key) if key else 0) + 1+len(nametext)+1
+        elif type(element) is Text:
+            pass
         
 
-class MenuItem(Button):
+    def add_element(self, element):
+        if not len(self.framelines):
+            self.empty_framelines_append()
+        if type(element) is MenuItem:
+            index_f = 0
+            for i, frameline in enumerate(self.framelines):
+                if type(frameline[0]) is MenuItem:
+                    index_f = i
+            if not index_f:
+                if len(self.framelines) >= 2 and \
+                   type(self.framelines[0]) is Label and \
+                   len(self.framelines[0]) == 1:
+                    pass
+                    #if 
 
-    def __init__(self, nametext, command, default_params, key=None, 
-                 alt_command=None, alt_default_params=None, 
-                 colors=None, selected_colors=None, hint_colors=None):
-        
-        super().__init__(nametext, command, default_params, key, 
-                         alt_command, alt_default_params, 
-                         colors, selected_colors)
-
-        self.hint_colors = hint_colors
-
-        self.current_id       = None
-        self.current_location = None
+        elif type(element) is Button:
+            pass
+        elif type(element) is HotKey:
+            pass
+        elif type(element) is Label:
+            pass
+        elif type(element) is Field:
+            pass
+        elif type(element) is Text:
+            pass
 
 
-class HotKey(Element):
-
-    def __init__(self, nametext, key, command, default_params):
-        super().__init__(nametext)
-        
-        self.key            = key
-        self.command        = command
-        self.default_params = default_params
-
-        self.current_id = None
 
 
-class Field(Element):
 
-    def __init__(self, nametext, width=None, key=None, 
-                 colors=None, selected_colors=None):
-        super().__init__(nametext)
-        
-        self.key             = key
-        self.colors          = colors
-        self.selected_colors = selected_colors
-
-        self.width = width    if width    else 1+len(nametext)+2
-        
-        self.current_id       = None
-        self.current_location = None
-        
-
-class Text(Element):
-
-    def __init__(self, nametext, width=None, colors=None):
-        super().__init__(nametext)
-        
-        self.colors = colors
-
-        self.width = 0
