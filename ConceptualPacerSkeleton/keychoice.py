@@ -30,7 +30,8 @@ def key_choice(*keyboard_items):
                b'_': '_', b'|': '|', b'\xf1': 'ё', b'\xa9': 'й', b'\xe6': 'ц', 
                b'\xe3': 'у', b'\xaa': 'к', b'\xa5': 'е', b'\xad': 'н', b'\xa3': 'г',
                b'\xe8': 'ш', b'\xe9': 'щ', b'\xa7': 'з', b'\xe5': 'х', b'\xea': 'ъ', 
-               b'\xe4': 'ф', b'\xeb': 'ы', b'\xa2': 'в', b'\xa0': 'а', b'\xaf': 'п'}
+               b'\xe4': 'ф', b'\xeb': 'ы', b'\xa2': 'в', b'\xa0': 'а', b'\xaf': 'п', 
+               b'\t': 'Tab', "b'\\x00'b'\\x94'": 'Ctrl+Tab'}
     firstTry = True
     choice = prechoice = None
                 
@@ -43,16 +44,17 @@ def key_choice(*keyboard_items):
                 temp = str(prechoice)+str(choice)
                 if str(prechoice)+str(choice) in meaning and meaning[str(prechoice)+str(choice)] in keyboard_items:
                     return meaning[str(prechoice)+str(choice)]
-                elif meaning[str(prechoice)+str(choice)] == 'Alt+F4': quit()
+                elif str(prechoice)+str(choice) in meaning and meaning[str(prechoice)+str(choice)] == 'Alt+F4': quit()
                 else:
                     prechoice = None
-                    print('... такой вариант не предлагается, будьте внимательны...')
+                    if 'silent' != keyboard_items[-1]:
+                        print(end='... такой вариант не предлагается, будьте внимательны...\r')
                     firstTry = False
             elif choice in meaning and meaning[choice] in keyboard_items:
                 return meaning[choice]
             elif firstTry:
                 if 'silent' != keyboard_items[-1]:
-                    print('... такой вариант не предлагается, будьте внимательны...')
+                    print(end='... такой вариант не предлагается, будьте внимательны...\r')
                 firstTry = False
                     
         choice = getch()

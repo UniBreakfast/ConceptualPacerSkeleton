@@ -16,28 +16,27 @@ class Board:
         self.framelines = []
         self.hotkeys    = []
         
-        self.selected_item_id = 2
-        self.current_relline  = 0       # relative line number
-        self.key_dictionary   = {}
+        self.selected_item_id   = 1
+        self.last_selectable_id = 0
+        self.current_relline    = 0       # relative line number
+        self.loc_dic            = {}
+        self.key_dic            = {}
 
         if title:
             pass
 
     def give_ids(self):
-        id = 0
+        self.selectable_ids = id = 0
         for frameline in self.framelines:
             for element in frameline:
                 if type(element) in [MenuItem, Button, Field]:
-                    id += 1; element.current_id = id
+                    id += 1; element.current_id = id;
+                    self.last_selectable_id     = id;
         for hotkey in self.hotkeys:
             id += 1; hotkey.current_id = id
-                
-        
-        pass
+
     
     def introspection(self):
-
-        self.give_ids()
 
         marg = self.margins
 
@@ -50,14 +49,15 @@ class Board:
         marg.longest_item_name = 0
         for frameline in self.framelines:
             if len(frameline) and type(frameline[0]) is MenuItem:
-                if len(frameline[0].key) > marg.longest_item_key:
-                    marg.longest_item_key = len(frameline[0].key)
+                if len(str(frameline[0].key)) > marg.longest_item_key:
+                    marg.longest_item_key = len(str(frameline[0].key))
                 if len(frameline[0].nametext) > marg.longest_item_name:
                     marg.longest_item_name = len(frameline[0].nametext)
         
+
         if marg.f_width: marg.width = marg.f_width  
         else: 
-            marg.width = marg.longest_item_key + marg.longest_item_name + 4
+            marg.width = marg.longest_item_key + marg.longest_item_name + 6
             for frameline in self.framelines:
                 if frameline.filled > marg.width:
                     marg.width = frameline.filled
@@ -66,36 +66,33 @@ class Board:
         if marg.f_indent: marg.indent = marg.f_indent
         else: marg.indent = (80 - marg.width) // 2
         
-        marg.axis = marg.indent + (marg.width - (marg.longest_item_key + marg.longest_item_name + 3)) // 2 + marg.longest_item_key + 3
+        marg.axis = marg.indent + (marg.width - (marg.longest_item_key + marg.longest_item_name + 6)) // 2 + marg.longest_item_key + 4
         
         marg.right_border = marg.indent + marg.width
 
 
-
     def draw(self):
         
-        self.introspection()
-
         marg = self.margins
         pal  = self.palette
-
-        move_cursor(-marg.height)
-
-        col = self.palette.board_colors.background
-            
-        if marg.width == 80:
-            print(end=col+'\r'+marg.height*marg.width*' '+RESET_COLORS)
-        else:
-            dye_rect(col, marg.width, marg.height, marg.indent)
-            
-        move_cursor(-marg.height)
         
+        bc  = str(pal.board_colors)
+        ind = marg.indent
+        wi  = marg.width
+
+        move_cursor(-marg.height)
+
+        relline = 0
 
         for frameline in self.framelines:
 
-            if not len(frameline): print()
+            if not len(frameline): 
+                print(r(ind)+bc+' '*wi+RESET_COLORS)
+                relline += 1
             else:
                 if type(frameline[0]) is MenuItem:
+
+                    bc = str(pal.board_colors)
 
                     h = frameline[0].hint_colors
                     h = str(h) if h else str(pal.board_colors)
@@ -113,51 +110,130 @@ class Board:
 
                     a = marg.axis
                     l = marg.longest_item_key
-                    i = marg.indent
+                    rb= marg.right_border
                     
                     k = frameline[0].key
-                    d = '. ' if type(k) is int else ' -'
-                    d = d+' ' if cid != sid else d
+                    dl= '. ' if type(k) is int else ' -'
+                    p = 1 if cid != sid else 0
                     
-                    t = frameline[0].nametext
+                    t = ' '+frameline[0].nametext+' '
                     t = ' '+t+' ' if cid == sid else t
-                    print((a-l-3)*RIGHT + h+k.rjust(l)+d + b+t +RESET_COLORS)
+                    
+                    print(r(ind)+bc+(a-l-4-ind)*' '+h+str(k).rjust(l)+bc+dl+p*' '+b+t+bc+p*' '+S+bc+(rb-a-len(t)+2-2*p)*' '+RESET_COLORS)
+
+                    self.loc_dic[frameline[0].current_id] = [relline, a-2, a+len(frameline[0].nametext)+2]
+
+                    relline += 1
+                
                 else:
 
+                    if frameline.justify == 'center':
+                        ii = (marg.width - frameline.filled) // 2
+                    else: ii = 1
+                    iv = 0
+
+                    bc  = str(pal.board_colors)
+                    print(end=r(marg.indent)+bc+ii*' ')
+                    
+                    column = marg.indent+ii
+                    
                     for element in frameline:
 
-                        frameline.justify
-                        frameline.filled
-                        frameline.interval
-                        
-                        element.colors
-                        element.selected_colors
-                        element.key
-                        element.nametext
-                        element.current_id
-                        element.current_location
-                        
-                        pal.board_colors
-                        pal.button_colors
-                        pal.selected_button_colors
-                        pal.field_colors
-                        pal.selected_field_colors
-                        self.selected_item_id
-                        
-                    goto_next_line = None
+                        if type(element) is Button:
+                            
+                            b = element.colors
+                            b = str(b) if b else str(pal.button_colors)
 
+                            s = element.selected_colors
+                            s = str(s) if s else str(pal.selected_button_colors)
+
+                            cid = element.current_id
+                            sid = self.selected_item_id
+
+                            b = s if cid == sid else b
+                    
+                            k = element.key
+                            dl = '. ' if type(k) is int else ' '
+                            p = 1 if cid != sid else 0
+                    
+                            t = ' '+str(k)+dl+element.nametext+' '
+                            t = ' '+t+' ' if cid == sid else t
+                            
+                            print(end=bc+(iv)*' '+p*' '+b+t+bc+p*' '+RESET_COLORS)
+
+                            iv = frameline.interval
+
+                            self.loc_dic[element.current_id] = [
+                            relline, column, column+len(t)+2*p]
+                            column += len(t)+2*p+iv
+
+                        elif type(element) is Label:
+                            
+                            l = element.colors
+                            l = str(l) if l else str(pal.board_colors)
+
+                            t = element.nametext
+
+                            print(end=bc+(iv)*' '+' '+l+t+bc+' '+RESET_COLORS)
+
+                            iv = frameline.interval
+                            column += len(t)+2+iv
+
+                        elif type(element) is Field:
+                            
+                            f = element.colors
+                            f = str(f) if f else str(pal.field_colors)
+
+                            s = element.selected_colors
+                            s = str(s) if s else str(pal.selected_field_colors)
+
+                            cid = element.current_id
+                            sid = self.selected_item_id
+
+                            f = s if cid == sid else f
+
+                            t = element.nametext+' '
+
+                            print(end=bc+(iv)*' '+' '+f+t+bc+' '+RESET_COLORS)
+
+                            iv = frameline.interval
+
+                            self.loc_dic[element.current_id] = [
+                            relline, column, column+len(t)+2]
+                            column += len(t)+2+iv
+
+                        elif type(element) is Text:
+                            
+                            l = element.colors
+                            l = str(l) if l else str(pal.board_colors)
+                    
+                    print(bc+(marg.width - frameline.filled-ii)*' '+S)
+                    relline += 1
+
+        for i in range(self.margins.height-len(self.framelines)):
+            print(r(ind)+bc+' '*wi+RESET_COLORS)
             
-
-
-
-
 
 
     def __call__(self):
         
+        self.introspection()
+
         if self.transition == 'roll':   move_cursor(self.margins.height)
+        self.give_ids()        
         
+        marg = self.margins
+        pal  = self.palette
+
+        #move_cursor(-marg.height)
+
+        #board_col = self.palette.board_colors.background
+            
+        #dye_rect(board_col, marg.width, marg.height, marg.indent)
+            
         self.draw()
+
+
 
 
     def empty_framelines_append(self, num=1):
@@ -226,6 +302,35 @@ class Board:
             pass
         elif type(element) is Text:
             pass
+
+
+
+    def select_next(self):
+        if self.selected_item_id < self.last_selectable_id:
+           self.selected_item_id += 1
+        else: self.selected_item_id = 1
+        self.draw()
+
+    def select_prev(self):
+        if self.selected_item_id > 1:
+           self.selected_item_id -= 1
+        else: self.selected_item_id = self.last_selectable_id
+        self.draw()
+
+
+    def select_up(self):
+        pass
+
+    def select_down(self):
+        pass
+
+    def select_right(self):
+        pass
+
+    def select_left(self):
+        pass
+
+    
 
 
 

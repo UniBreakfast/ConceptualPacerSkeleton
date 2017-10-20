@@ -1,5 +1,5 @@
 from msvcrt import getch
-from msvcrt import getwch
+#from msvcrt import getwch
 
 #print('string')
 #print('string', end='\n')
@@ -12,7 +12,7 @@ while True:
     while True:
         if not double:
             print('', end="\n Нажми следующую кнопку или комбинацию:  ")
-        key = getwch()
+        key = getch()
         if key in [b'\x00', b'\xe0'] and not double:
             double = True
             prechoice = key
@@ -38,7 +38,7 @@ while True:
             for i in [1,2]:
                 if not double:
                     print('', end="\n Повтори кнопку или комбинацию - перепроверим:  ")
-                key = getwch()
+                key = getch()
                 if key in [b'\x00', b'\xe0'] and not double:
                     double = True
                     prechoice = key

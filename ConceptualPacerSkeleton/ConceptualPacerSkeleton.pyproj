@@ -61,6 +61,9 @@
     <Compile Include="SANDBOX.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sandbox1.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="snake.py">
       <SubType>Code</SubType>
     </Compile>

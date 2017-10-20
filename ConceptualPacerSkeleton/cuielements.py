@@ -19,9 +19,18 @@ color_dic = {
 '\x1b[31;1m' : 'F_RED',     '\x1b[31m' : 'F_DIM_RED',     '\x1b[41m' : 'B_DIM_RED',
 '\x1b[30;1m' : 'F_GREY',    '\x1b[30m' : 'F_BLACK',       '\x1b[40m' : 'B_BLACK'}       
 
-RESET_COLORS = '\x1b[40;37;22m'
+S=RESET_COLORS = '\x1b[40;37;22m'
 
-UP = '\x1b[1A';     DOWN = '\x1b[1B';      RIGHT = '\x1b[1C';     LEFT = '\x1b[1D'
+U=UP = '\x1b[1A';   D=DOWN = '\x1b[1B';   R=RIGHT = '\x1b[1C';   L=LEFT = '\x1b[1D'
+
+def up   (y):   print(end='\x1b['+str(y)+'A')
+def down (y):   print(end='\x1b['+str(y)+'B')
+def right(x):   print(end='\x1b['+str(x)+'C')
+def left (x):   print(end='\x1b['+str(x)+'D')
+def u(y):       return    '\x1b['+str(y)+'A'
+def d(y):       return    '\x1b['+str(y)+'B'
+def r(x):       return    '\x1b['+str(x)+'C'
+def l(x):       return    '\x1b['+str(x)+'D'
 
 def move_cursor(y=0, x=0):
     if   y > 0:     print(end=DOWN*y)
@@ -30,7 +39,8 @@ def move_cursor(y=0, x=0):
     elif x < 0:     print(end=LEFT*-x)
 
 def dye_rect(color, x=1, y=1, indent=0):
-    print(indent*RIGHT+color+(x*' '+x*LEFT+DOWN)*(y-1)+RESET_COLORS)
+    if x == 80: print(color+x*' '*y+UP+RESET_COLORS)
+    else: print(indent*RIGHT+color+(x*' '+x*LEFT+DOWN)*(y-1)+RESET_COLORS)
 
 
 
@@ -53,7 +63,7 @@ class Palette:
 
     def __init__(self, board_colors           =ColorPair(B_DIM_GREEN,  F_DIM_WHITE),
                        field_colors           =ColorPair(B_BLACK,      F_DIM_WHITE),
-                       button_colors          =ColorPair(B_DIM_YELLOW, F_BLACK),
+                       button_colors          =ColorPair(B_DIM_YELLOW, F_DIM_WHITE),
                        selected_field_colors  =ColorPair(B_DIM_BLUE,   F_WHITE),
                        selected_button_colors =ColorPair(B_DIM_RED,    F_YELLOW)):
         
@@ -122,7 +132,7 @@ class Margins:
 
 class FrameLine(list):
 
-    def __init__(self, justify='center', interval=3):
+    def __init__(self, justify='center', interval=1):
         
         self.justify  = justify
         self.interval = interval
@@ -132,6 +142,7 @@ class FrameLine(list):
 
     def introspection(self):
 
+        self.filled = 0
         for element in self:
             if self.filled: self.filled += self.interval
             self.filled   = self.filled +  element.width
@@ -160,7 +171,7 @@ class Label(Element):
 
         self.colors = colors
         
-        self.width = len(nametext)
+        self.width = len(nametext)+2
 
 
 
@@ -183,10 +194,10 @@ class Button(Element):
         self.current_id       = None
         self.current_location = None
 
-        self.width = (1+len(key) if key else 0) + 1+len(nametext)+1
+        self.width=(len(str(key))+1+(type(key)is int)if key else 0)+4+len(nametext)
 
     def __repr__(self):
-        return self.key+' '+self.nametext
+        return str(self.key)+' '+self.nametext
         
 
 class MenuItem(Button):
@@ -204,7 +215,7 @@ class MenuItem(Button):
         self.current_id       = None
         self.current_location = None
         
-        self.width = (len(key)+2 if key else 0) + 1+len(nametext)+1
+        self.width = (len(str(key))+2 if key!=None else 0)+2+len(nametext)+2
 
     def __repr__(self):
         if type(self.key) is int:
