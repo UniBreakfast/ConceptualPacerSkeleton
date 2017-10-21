@@ -67,11 +67,28 @@ class Palette:
                        selected_field_colors  =ColorPair(B_DIM_BLUE,   F_WHITE),
                        selected_button_colors =ColorPair(B_DIM_RED,    F_YELLOW)):
         
-        self.board_colors           = board_colors
-        self.field_colors           = field_colors
-        self.button_colors          = button_colors
-        self.selected_field_colors  = selected_field_colors
-        self.selected_button_colors = selected_button_colors
+        if type(board_colors) is ColorPair:
+            self.board_colors           = board_colors
+        elif type(board_colors) is tuple and len(board_colors) == 2:
+            self.board_colors           = ColorPair(*board_colors)
+        if type(field_colors) is ColorPair:
+            self.field_colors           = field_colors
+        elif type(field_colors) is tuple and len(field_colors) == 2:
+            self.field_colors           = ColorPair(*field_colors)
+        if type(button_colors) is ColorPair:
+            self.button_colors          = button_colors
+        elif type(button_colors) is tuple and len(button_colors) == 2:
+            self.button_colors          = ColorPair(*button_colors)
+        if type(selected_field_colors) is ColorPair:
+            self.selected_field_colors  = selected_field_colors
+        elif type(selected_field_colors) is tuple and len(selected_field_colors) == 2:
+            self.selected_field_colors  = ColorPair(*selected_field_colors)
+        if type(selected_button_colors) is ColorPair:
+            self.selected_button_colors = selected_button_colors
+        elif type(selected_button_colors) is tuple and len(selected_button_colors) == 2:
+            self.selected_button_colors = ColorPair(*selected_button_colors)
+
+
 
     def __repr__(self):
         return '''{board_colors           : %s,
@@ -132,8 +149,11 @@ class Margins:
 
 class FrameLine(list):
 
-    def __init__(self, justify='center', interval=1):
+    def __init__(self, elements=None, justify='center', interval=1):
         
+        if elements: 
+            for element in elements: self.append(element)
+
         self.justify  = justify
         self.interval = interval
         self.positions = {}
@@ -183,18 +203,37 @@ class Button(Element):
         
         super().__init__(nametext)
         
+        if type(default_params) is not tuple: default_params = (default_params)
+
         self.key                = key
         self.command            = command
         self.default_params     = default_params
-        self.alt_command        = alt_command
-        self.alt_default_params = alt_default_params
         self.colors             = colors
         self.selected_colors    = selected_colors
-
+        if alt_command and alt_default_params:
+            self.alt_command        = alt_command
+            self.alt_default_params = alt_default_params
+        else:
+            self.alt_command        = command
+            self.alt_default_params = default_params
         self.current_id       = None
         self.current_location = None
 
         self.width=(len(str(key))+1+(type(key)is int)if key else 0)+4+len(nametext)
+        
+
+    def __call__(self, normal=True):
+        [*default_params]     = self.default_params
+        [*alt_default_params] = self.alt_default_params
+        if normal: 
+            if type(self.default_params) is str:
+              self.command (self.default_params)
+            else: self.command (*default_params)
+        else:   
+            if type(self.alt_default_params) is str:
+              self.alt_command (self.alt_default_params)
+            else: self.alt_command (*alt_default_params)
+
 
     def __repr__(self):
         return str(self.key)+' '+self.nametext

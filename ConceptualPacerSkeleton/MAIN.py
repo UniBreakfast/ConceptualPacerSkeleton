@@ -1,5 +1,6 @@
 from time import sleep
 
+from consoleui import *
 from dumstick import *
 from saveload import *
 from keychoice import *
@@ -20,6 +21,21 @@ def main():
         
 
 def identify_user():
+    
+    login_pal = Palette((B_DIM_MAGENTA, F_DIM_WHITE),
+                        (B_BLACK,       F_DIM_RED),
+                        (B_DIM_BLUE,    F_DIM_WHITE),
+                        (B_DIM_RED,     F_YELLOW),
+                        (B_DIM_CYAN,    F_CYAN))
+    down(10)
+    login_brd = Board("Авторизация пользователя", login_pal)
+    login_brd.empty_framelines_append(7, 'left')
+    login_brd.framelines[4].append(Label("Логин:"))
+
+
+    login_brd()
+    
+    
     dummy('''
     Hello!
     Please SELECT user, introduce yourself by LOGIN or REGISTER new user.

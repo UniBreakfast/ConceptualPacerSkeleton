@@ -42,7 +42,10 @@
 
 
 from consoleui import *
-from keychoice import *
+#from keychoice import *
+
+def printhere(*args):
+    print(*args, end='')
 
 main_menu = Board(height=12)
 
@@ -52,8 +55,8 @@ item3 = MenuItem('Go to screen 3', print, (), 3)
 item4 = MenuItem('Show something else', print, (), 'End')
 
 button1 = Field('Do it Do it')
-button1 = Button('Do it', print, (), 'F5')
-button2 = Button('Just do it', print, (), 'Enter')
+button1 = Button('Do it', printhere, ('\a', '\a', '\r'), 'F5', printhere, ('Space Bar DETECTED','\r'))
+button2 = Button('Just do it', printhere, '\a', 'Enter')
 button3 = Button('Regret about it', print, (), 'Del')
 label1 = Field('Input here')
 field2 = Field('... also input here')
@@ -95,8 +98,3 @@ main_menu.introspection()
 print(main_menu.margins)
 
 main_menu()
-while True:
-    choice = key_choice('Tab', 'Ctrl+Tab')
-    if   choice == 'Tab'     : main_menu.select_next()
-    elif choice == 'Ctrl+Tab': main_menu.select_prev()
-    print(main_menu.loc_dic)

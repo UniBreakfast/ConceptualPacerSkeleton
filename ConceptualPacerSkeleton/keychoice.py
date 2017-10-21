@@ -9,7 +9,7 @@ def key_choice(*keyboard_items):
     meaning = {b'1': 1, b'2': 2, b'3': 3, b'4': 4, b'5': 5, 
                b'6': 6, b'7': 7, b'8': 8, b'9': 9, b'0': 0, 
                b'`': '`', b'~': '~', b'\xf0': '`', b'\x1b': 'Esc', 
-               b'+': '+', b'=': '=', 
+               b'+': '+', b'=': '=', b' ': 'Space',
                "b'\\x00'b'<'": 'F2', "b'\\x00'b'='": 'F3', 
                "b'\\x00'b'@'": 'F6', "b'\\x00'b'A'": 'F7', "b'\\x00'b'B'": 'F8',
                b'\x13': 'Ctrl+S', b'\x0c': 'Ctrl+L', "b'\\x00'b'k'": 'Alt+F4',
@@ -19,7 +19,7 @@ def key_choice(*keyboard_items):
                b'a': 'a', b's': 's', b'd': 'd', b'f': 'f', b'g': 'g', b'h': 'h', 
                b'j': 'j', b'k': 'k', b'l': 'l', b';': ';', b"'": "'", b'z': 'z', 
                b'x': 'x', b'c': 'c', b'v': 'v', b'b': 'b', b'n': 'n', b'm': 'm', 
-               b',': ',', b'.': '.', b'/': '/', b' ': ' ', b'Q': 'Q', b'W': 'W', 
+               b',': ',', b'.': '.', b'/': '/', b'Q': 'Q', b'W': 'W', 
                b'E': 'E', b'R': 'R', b'T': 'T', b'Y': 'Y', b'U': 'U', b'I': 'I', 
                b'O': 'O', b'P': 'P', b'{': '{', b'}': '}', b'A': 'A', b'S': 'S', 
                b'D': 'D', b'F': 'F', b'G': 'G', b'H': 'H', b'J': 'J', b'K': 'K', 
@@ -31,7 +31,8 @@ def key_choice(*keyboard_items):
                b'\xe3': 'у', b'\xaa': 'к', b'\xa5': 'е', b'\xad': 'н', b'\xa3': 'г',
                b'\xe8': 'ш', b'\xe9': 'щ', b'\xa7': 'з', b'\xe5': 'х', b'\xea': 'ъ', 
                b'\xe4': 'ф', b'\xeb': 'ы', b'\xa2': 'в', b'\xa0': 'а', b'\xaf': 'п', 
-               b'\t': 'Tab', "b'\\x00'b'\\x94'": 'Ctrl+Tab'}
+               b'\t': 'Tab', "b'\\x00'b'\\x94'": 'Ctrl+Tab', "b'\\xe0'b'P'": 'Down',
+               "b'\\xe0'b'H'": 'Up', "b'\\xe0'b'K'": 'Left', "b'\\xe0'b'M'": 'Right'}
     firstTry = True
     choice = prechoice = None
                 

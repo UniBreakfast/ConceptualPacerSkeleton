@@ -1,4 +1,5 @@
 from cuielements import *
+from keychoice import *
 
 
 
@@ -19,21 +20,25 @@ class Board:
         self.selected_item_id   = 1
         self.last_selectable_id = 0
         self.current_relline    = 0       # relative line number
+        self.el_dic             = {}
         self.loc_dic            = {}
         self.key_dic            = {}
 
         if title:
-            pass
+            self.framelines_append([FrameLine(),FrameLine([Label(title)]), FrameLine()])
 
     def give_ids(self):
         self.selectable_ids = id = 0
+        el_dic = {}
         for frameline in self.framelines:
             for element in frameline:
                 if type(element) in [MenuItem, Button, Field]:
                     id += 1; element.current_id = id;
                     self.last_selectable_id     = id;
+                    self.el_dic[id] = element
         for hotkey in self.hotkeys:
             id += 1; hotkey.current_id = id
+            self.el_dic[id] = element
 
     
     def introspection(self):
@@ -54,7 +59,6 @@ class Board:
                 if len(frameline[0].nametext) > marg.longest_item_name:
                     marg.longest_item_name = len(frameline[0].nametext)
         
-
         if marg.f_width: marg.width = marg.f_width  
         else: 
             marg.width = marg.longest_item_key + marg.longest_item_name + 6
@@ -80,7 +84,7 @@ class Board:
         ind = marg.indent
         wi  = marg.width
 
-        move_cursor(-marg.height)
+        up(marg.height)
 
         relline = 0
 
@@ -92,10 +96,8 @@ class Board:
             else:
                 if type(frameline[0]) is MenuItem:
 
-                    bc = str(pal.board_colors)
-
                     h = frameline[0].hint_colors
-                    h = str(h) if h else str(pal.board_colors)
+                    h = str(h) if h else bc
                     
                     b = frameline[0].colors
                     b = str(b) if b else str(pal.button_colors)
@@ -119,10 +121,11 @@ class Board:
                     t = ' '+frameline[0].nametext+' '
                     t = ' '+t+' ' if cid == sid else t
                     
-                    print(r(ind)+bc+(a-l-4-ind)*' '+h+str(k).rjust(l)+bc+dl+p*' '+b+t+bc+p*' '+S+bc+(rb-a-len(t)+2-2*p)*' '+RESET_COLORS)
+                    print(r(ind)+bc+(a-l-4-ind)*' '+h+str(k).rjust(l)+bc+dl+p*' '+(b+
+                    t)+bc+p*' '+S+bc+(rb-a-len(t)+2-2*p)*' '+RESET_COLORS)
 
-                    self.loc_dic[frameline[0].current_id] = [relline, a-2, a+len(frameline[0].nametext)+2]
-
+                    self.loc_dic[frameline[0].current_id] = [relline, 
+                                     a-2, a+len(frameline[0].nametext)+2]
                     relline += 1
                 
                 else:
@@ -215,35 +218,47 @@ class Board:
             
 
 
+
     def __call__(self):
         
         self.introspection()
 
-        if self.transition == 'roll':   move_cursor(self.margins.height)
-        self.give_ids()        
+        if self.transition == 'roll':   down(self.margins.height)
         
-        marg = self.margins
-        pal  = self.palette
-
-        #move_cursor(-marg.height)
-
-        #board_col = self.palette.board_colors.background
-            
-        #dye_rect(board_col, marg.width, marg.height, marg.indent)
-            
+        self.give_ids()        
+                    
         self.draw()
 
+        while True:
+            choice = key_choice('Tab', 'Ctrl+Tab', 'Down', 'Up', 'Right', 'Left',
+                                'Enter', 'Space')
+            if   choice == 'Tab'     : self.select_next()
+            elif choice == 'Ctrl+Tab': self.select_prev()
+            elif choice == 'Down'    : self.select_down()
+            elif choice == 'Up'      : self.select_up()
+            elif choice == 'Right'   : self.select_right()
+            elif choice == 'Left'    : self.select_left()
+            elif choice == 'Enter'   : self.el_dic[self.selected_item_id]()
+            elif choice == 'Space'   : self.el_dic[self.selected_item_id](False)
 
+    
+            #self.draw()
+       
+    
+    def framelines_append(self, framelines):
+        if not isinstance(framelines, Iterable): framelines = (framelines)
+        for frameline in framelines: self.framelines.append(frameline)
 
+    def empty_framelines_append(self, num=1, justify='center'):
+        for i in range(num):    self.framelines.append(FrameLine(justify=justify))
 
-    def empty_framelines_append(self, num=1):
-        for i in range(num):    self.framelines.append(FrameLine())
+    def empty_framelines_insert(self, index, num=1, justify='center'):
+        for i in range(num):    self.framelines.insert(index, FrameLine(
+                                                       justify=justify))
 
-    def empty_framelines_insert(self, index, num=1):
-        for i in range(num):    self.framelines.insert(index, FrameLine())
-
-    def element_in_frameline_append(self, element, index_f):
-        self.framelines[index_f].append(element)
+    def elements_in_frameline_append(self, elements, index_f):
+        if not isinstance(elements, Iterable): elements = (elements)
+        for element in elements:  self.framelines[index_f].append(element)
 
     def element_in_frameline_insert(self, element, index_f, index_e):
         self.framelines[index_f].insert(index_e, element)
@@ -319,16 +334,100 @@ class Board:
 
 
     def select_up(self):
-        pass
+        cur_id     = self.selected_item_id
+        dic        = self.loc_dic
+        x1 = dic[cur_id][1]; x2 = dic[cur_id][2]
+        cur_line   = dic[cur_id][0]
+        next_line  = self.last_selectable_id+1
+        candidates = []
+        next_id    = cur_id
+        if cur_id > 1:
+            for id in range(cur_id-1, 0, -1):
+                line = dic[id][0]
+                if line < cur_line:
+                    if line < next_line and next_line == self.last_selectable_id+1:
+                        next_line = line
+                        candidates.append(id)
+                    elif line == next_line:
+                        candidates.append(id)
+                    elif line < next_line: break
+        if len(candidates):
+            for candidate in candidates:
+                c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                if c1 <= x1 and x2 <= c2:
+                    next_id = candidate
+                    break
+                elif x1 <= c1 < x2 or x1 < c2 <= x2:
+                    next_id = candidate
+                    break
+            if next_id == cur_id:
+                for candidate in candidates:
+                    c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                    if c2 <= x1:
+                        next_id = candidate
+            if next_id == cur_id:
+                for candidate in candidates:
+                    c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                    if x2 <= c1:
+                        next_id = candidate
+                        break
+            self.selected_item_id = next_id
+            self.draw()
 
     def select_down(self):
-        pass
+        cur_id     = self.selected_item_id
+        dic        = self.loc_dic
+        x1 = dic[cur_id][1]; x2 = dic[cur_id][2]
+        cur_line   = dic[cur_id][0]
+        next_line  = -1
+        candidates = []
+        next_id    = cur_id
+        if cur_id < self.last_selectable_id:
+            for id in range(cur_id+1, self.last_selectable_id+1):
+                line = dic[id][0]
+                if line > cur_line:
+                    if line > next_line and next_line == -1:
+                        next_line = line
+                        candidates.append(id)
+                    elif line == next_line:
+                        candidates.append(id)
+                    elif line > next_line: break
+        if len(candidates):
+            for candidate in candidates:
+                c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                if c1 <= x1 and x2 <= c2:
+                    next_id = candidate
+                    break
+                elif x1 <= c1 < x2 or x1 < c2 <= x2:
+                    next_id = candidate
+                    break
+            if next_id == cur_id:
+                for candidate in candidates:
+                    c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                    if c2 <= x1:
+                        next_id = candidate
+            if next_id == cur_id:
+                for candidate in candidates:
+                    c1 = dic[candidate][1]; c2 = dic[candidate][2]
+                    if x2 <= c1:
+                        next_id = candidate
+                        break
+            self.selected_item_id = next_id
+            self.draw()
 
     def select_right(self):
-        pass
+        dic = self.loc_dic
+        if self.selected_item_id < self.last_selectable_id:
+            if dic[self.selected_item_id+1][0] == dic[self.selected_item_id][0]:
+                self.selected_item_id += 1
+                self.draw()
 
     def select_left(self):
-        pass
+        dic = self.loc_dic
+        if self.selected_item_id > 1:
+            if dic[self.selected_item_id-1][0] == dic[self.selected_item_id][0]:
+                self.selected_item_id -= 1
+                self.draw()
 
     
 

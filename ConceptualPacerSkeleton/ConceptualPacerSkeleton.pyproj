@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>SANDBOX.py</StartupFile>
+    <StartupFile>MAIN.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
