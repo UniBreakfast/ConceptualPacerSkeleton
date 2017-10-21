@@ -26,15 +26,22 @@ def identify_user():
                         (B_BLACK,       F_DIM_RED),
                         (B_DIM_BLUE,    F_DIM_WHITE),
                         (B_DIM_RED,     F_YELLOW),
-                        (B_DIM_CYAN,    F_CYAN))
+                        (B_DIM_CYAN,    F_WHITE))
     down(10)
     login_brd = Board("Авторизация пользователя", login_pal)
-    login_brd.empty_framelines_append(7, 'left')
+    login_brd.empty_framelines_append(8, 'left')
     login_brd.framelines[4].append(Label("Логин:"))
+    login_brd.framelines[5].append(Field('',35))
+    login_brd.framelines[6].append(Label("Пароль:"))
+    login_brd.framelines[7].append(Field('',35))
+    login_brd.framelines[9].justify='center'
 
+    new_user_but = Button('Новый пользователь', print, ())
+    exit_but = Button('Выход', quit, (), 'Esc')
+    login_brd.elements_in_frameline_append((new_user_but, exit_but), 9)
 
     login_brd()
-    
+    print(login_brd.framelines[7][0].current_location)
     
     dummy('''
     Hello!

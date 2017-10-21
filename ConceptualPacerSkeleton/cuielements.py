@@ -223,8 +223,10 @@ class Button(Element):
         
 
     def __call__(self, normal=True):
-        [*default_params]     = self.default_params
-        [*alt_default_params] = self.alt_default_params
+        try:        [*default_params] =  self.default_params
+        except:     [*default_params] = (self.default_params,)
+        try:    [*alt_default_params] =  self.alt_default_params
+        except: [*alt_default_params] = (self.alt_default_params,)
         if normal: 
             if type(self.default_params) is str:
               self.command (self.default_params)
@@ -286,7 +288,7 @@ class Field(Element):
         self.colors          = colors
         self.selected_colors = selected_colors
 
-        self.width = width    if width    else 1+len(nametext)+2
+        self.width = width+2    if width    else 1+len(nametext)+2
         
         self.current_id       = None
         self.current_location = None

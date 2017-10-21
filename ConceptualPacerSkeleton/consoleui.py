@@ -1,6 +1,6 @@
 from cuielements import *
 from keychoice import *
-
+from collections import Iterable
 
 
 
@@ -126,6 +126,8 @@ class Board:
 
                     self.loc_dic[frameline[0].current_id] = [relline, 
                                      a-2, a+len(frameline[0].nametext)+2]
+                    frameline[0].current_location = [relline, 
+                                     a-2, a+len(frameline[0].nametext)+2]
                     relline += 1
                 
                 else:
@@ -155,8 +157,11 @@ class Board:
 
                             b = s if cid == sid else b
                     
-                            k = element.key
-                            dl = '. ' if type(k) is int else ' '
+                            k = element.key if element.key else ''
+                            if type(k) is int: dl = '. '
+                            elif not element.key: dl = ''
+                            else: dl = ' '
+
                             p = 1 if cid != sid else 0
                     
                             t = ' '+str(k)+dl+element.nametext+' '
@@ -167,6 +172,8 @@ class Board:
                             iv = frameline.interval
 
                             self.loc_dic[element.current_id] = [
+                            relline, column, column+len(t)+2*p]
+                            element.current_location = [
                             relline, column, column+len(t)+2*p]
                             column += len(t)+2*p+iv
 
@@ -194,15 +201,20 @@ class Board:
                             sid = self.selected_item_id
 
                             f = s if cid == sid else f
+                            la = '>' if cid == sid else ' '
+                            ra = '<' if cid == sid else ' '
 
                             t = element.nametext+' '
+                            p = element.width-2 - len(t)
 
-                            print(end=bc+(iv)*' '+' '+f+t+bc+' '+RESET_COLORS)
+                            print(end=bc+(iv)*' '+la+f+t+p*' '+bc+ra+RESET_COLORS)
 
                             iv = frameline.interval
 
                             self.loc_dic[element.current_id] = [
-                            relline, column, column+len(t)+2]
+                            relline, column, column+element.width]
+                            element.current_location = [
+                            relline, column, column+element.width]
                             column += len(t)+2+iv
 
                         elif type(element) is Text:
@@ -238,7 +250,9 @@ class Board:
             elif choice == 'Up'      : self.select_up()
             elif choice == 'Right'   : self.select_right()
             elif choice == 'Left'    : self.select_left()
-            elif choice == 'Enter'   : self.el_dic[self.selected_item_id]()
+            elif choice == 'Enter'   : 
+                self.el_dic[self.selected_item_id]()
+                break
             elif choice == 'Space'   : self.el_dic[self.selected_item_id](False)
 
     
@@ -257,7 +271,7 @@ class Board:
                                                        justify=justify))
 
     def elements_in_frameline_append(self, elements, index_f):
-        if not isinstance(elements, Iterable): elements = (elements)
+        if not isinstance(elements, Iterable): elements = (elements,)
         for element in elements:  self.framelines[index_f].append(element)
 
     def element_in_frameline_insert(self, element, index_f, index_e):
@@ -338,14 +352,14 @@ class Board:
         dic        = self.loc_dic
         x1 = dic[cur_id][1]; x2 = dic[cur_id][2]
         cur_line   = dic[cur_id][0]
-        next_line  = self.last_selectable_id+1
+        next_line  = self.margins.height
         candidates = []
         next_id    = cur_id
         if cur_id > 1:
             for id in range(cur_id-1, 0, -1):
                 line = dic[id][0]
                 if line < cur_line:
-                    if line < next_line and next_line == self.last_selectable_id+1:
+                    if line < next_line and next_line == self.margins.height:
                         next_line = line
                         candidates.append(id)
                     elif line == next_line:
