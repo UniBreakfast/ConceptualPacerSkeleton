@@ -6,7 +6,7 @@ from saveload import *
 from keychoice import *
 from pacerclasses import *
 import dataglobe as u
-
+#from dataglobe import *
 
 def main():
     while True:
@@ -28,17 +28,36 @@ def identify_user():
                         (B_DIM_RED,     F_YELLOW),
                         (B_DIM_CYAN,    F_WHITE))
     down(10)
-    login_brd = Board("Авторизация пользователя", login_pal)
-    login_brd.empty_framelines_append(8, 'left')
-    login_brd.framelines[4].append(Label("Логин:"))
-    login_brd.framelines[5].append(Field('',35))
-    login_brd.framelines[6].append(Label("Пароль:"))
-    login_brd.framelines[7].append(Field('',35))
-    login_brd.framelines[9].justify='center'
+    login_brd = Board("Авторизация пользователя", login_pal, hint_at=(1,18))
+    
+    u.BOARDS.append(login_brd)
+    
+    login_brd.empty_framelines_append(4, 'left')
+    login_brd.to_frameline_append((Label("Логин:"), Field('',17)), 4)
+    login_brd.framelines[4].interval = 2
+    login_brd.to_frameline_append((Label("Пароль:"), Field('',17)), 6)
+    login_brd.empty_framelines_append(6)
 
-    new_user_but = Button('Новый пользователь', print, ())
+    def check_user(): pass
+
+    def create_new_use(text):
+        
+        create_nu_brd = Board("Новый пользователь")
+        
+        #print(u.BOARDS[0].palette)
+        del text
+
+        create_nu_brd()
+
+
+    
+    enter_but = Button('Вход', check_user, (), 'Enter')
+    new_user_but = Button('Новый пользователь', create_new_use, login_brd, 'Ctrl+N')
     exit_but = Button('Выход', quit, (), 'Esc')
-    login_brd.elements_in_frameline_append((new_user_but, exit_but), 9)
+    login_brd.framelines[9].interval = 2
+    login_brd.to_frameline_append((enter_but, exit_but), 9)
+    login_brd.framelines[11].append(new_user_but)
+
 
     login_brd()
     print(login_brd.framelines[7][0].current_location)

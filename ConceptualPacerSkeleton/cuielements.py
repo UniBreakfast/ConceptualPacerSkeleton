@@ -1,3 +1,4 @@
+from consoleui import *
 import colorama; colorama.init()
 
 F_WHITE   = '\x1b[37;1m';  F_DIM_WHITE   = '\x1b[37m';  B_DIM_WHITE   = '\x1b[47m'
@@ -58,7 +59,6 @@ class ColorPair:
     def __str__(self):
         return self.background+self.foreground
 
-
 class Palette:
 
     def __init__(self, board_colors           =ColorPair(B_DIM_GREEN,  F_DIM_WHITE),
@@ -102,7 +102,6 @@ class Palette:
                       repr(self.selected_field_colors),
                       repr(self.selected_button_colors))
 
-
 class Margins:
 
     def __init__(self, f_indent=None, f_width=None, f_height=None ):
@@ -143,10 +142,6 @@ class Margins:
 
 
 
-
-
-
-
 class FrameLine(list):
 
     def __init__(self, elements=None, justify='center', interval=1):
@@ -172,8 +167,6 @@ class FrameLine(list):
 
 
 
-
-
 class Element:
 
     def __init__(self, nametext):
@@ -183,7 +176,6 @@ class Element:
     def __repr__(self):
         return self.nametext
 
-
 class Label(Element):
 
     def __init__(self, nametext, colors=None):
@@ -192,8 +184,6 @@ class Label(Element):
         self.colors = colors
         
         self.width = len(nametext)+2
-
-
 
 class Button(Element):
 
@@ -223,6 +213,7 @@ class Button(Element):
         
 
     def __call__(self, normal=True):
+        
         try:        [*default_params] =  self.default_params
         except:     [*default_params] = (self.default_params,)
         try:    [*alt_default_params] =  self.alt_default_params
@@ -240,7 +231,6 @@ class Button(Element):
     def __repr__(self):
         return str(self.key)+' '+self.nametext
         
-
 class MenuItem(Button):
 
     def __init__(self, nametext, command, default_params, key=None, 
@@ -264,8 +254,6 @@ class MenuItem(Button):
         else:
             return self.key+' - '+self.nametext
 
-
-
 class HotKey(Element):
 
     def __init__(self, nametext, key, command, default_params):
@@ -276,7 +264,6 @@ class HotKey(Element):
         self.default_params = default_params
 
         self.current_id = None
-
 
 class Field(Element):
 
@@ -292,7 +279,12 @@ class Field(Element):
         
         self.current_id       = None
         self.current_location = None
-        
+
+    def edit(self):
+        pass
+
+    def edit_inplace(self):
+        pass
 
 class Text(Element):
 

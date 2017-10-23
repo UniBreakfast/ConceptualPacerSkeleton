@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>MAIN.py</StartupFile>
+    <StartupFile>View Control.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -24,6 +24,15 @@
     <OutputPath>bin\a\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Board Control.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui3.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui3toolbox.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cuielements.py">
       <SubType>Code</SubType>
     </Compile>
@@ -71,6 +80,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="saveload.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Time It - flat_the_list.py" />
+    <Compile Include="Time It - make_blank_charmap.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View Control.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

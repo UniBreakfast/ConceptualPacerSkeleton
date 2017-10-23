@@ -1,5 +1,5 @@
 from cuielements import *
-from keychoice import *
+from keychoice   import *
 from collections import Iterable
 
 
@@ -7,13 +7,14 @@ from collections import Iterable
 
 class Board:
 
-    def __init__(self, title=None, palette=Palette(), 
-                 transition='roll', width=None, height=None, indent=None):
+    def __init__(self, title=None, palette=Palette(), transition='roll', 
+                 width=None, height=None, indent=None, hint_at=(0, 0)):
         
         self.palette    = palette
         self.margins    = Margins(indent, width, height)
         self.transition = transition
-        
+        self.hint_at    = hint_at
+
         self.framelines = []
         self.hotkeys    = []
         
@@ -23,7 +24,7 @@ class Board:
         self.el_dic             = {}
         self.loc_dic            = {}
         self.key_dic            = {}
-
+        
         if title:
             self.framelines_append([FrameLine(),FrameLine([Label(title)]), FrameLine()])
 
@@ -84,7 +85,7 @@ class Board:
         ind = marg.indent
         wi  = marg.width
 
-        up(marg.height)
+        up(marg.height+self.hint_at[0]); left(self.hint_at[1])
 
         relline = 0
 
@@ -227,9 +228,8 @@ class Board:
 
         for i in range(self.margins.height-len(self.framelines)):
             print(r(ind)+bc+' '*wi+RESET_COLORS)
+        down(self.hint_at[0]); right(self.hint_at[1])
             
-
-
 
     def __call__(self):
         
@@ -256,9 +256,6 @@ class Board:
             elif choice == 'Space'   : self.el_dic[self.selected_item_id](False)
 
     
-            #self.draw()
-       
-    
     def framelines_append(self, framelines):
         if not isinstance(framelines, Iterable): framelines = (framelines)
         for frameline in framelines: self.framelines.append(frameline)
@@ -270,7 +267,7 @@ class Board:
         for i in range(num):    self.framelines.insert(index, FrameLine(
                                                        justify=justify))
 
-    def elements_in_frameline_append(self, elements, index_f):
+    def to_frameline_append(self, elements, index_f):
         if not isinstance(elements, Iterable): elements = (elements,)
         for element in elements:  self.framelines[index_f].append(element)
 
