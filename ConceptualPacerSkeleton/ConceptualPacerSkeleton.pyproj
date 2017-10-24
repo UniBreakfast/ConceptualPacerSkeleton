@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>View Control.py</StartupFile>
+    <StartupFile>pacer1onCUI3.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -28,6 +28,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cui3.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui3abstracts.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cui3toolbox.py">
@@ -65,6 +68,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="module2.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="pacer1onCUI3.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SANDBOX.py">

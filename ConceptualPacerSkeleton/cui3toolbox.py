@@ -50,4 +50,12 @@ def vert(y):
 
 def curto(y=0, x=0):     print(end='\x1b['+str(y+1)+';'+str(x+1)+'H')
 
+def blank_charmap(y=H, x=W):
+   return [[(None, None, None)]*x for row in range(y)]
+
+def underlay_charmap(y=H, x=W, char=' ', b_color=B_BLACK, f_color=F_DIM_WHITE):
+    return (((b_color, f_color, char),)*x,)*y
+
+
+
 end=None
