@@ -1,5 +1,7 @@
-from cui3toolbox import *
 from time import time
+
+from keychoice     import *
+from cui3toolbox import *
 
 class SelfAware:
     def __init__(self, nametag='unnamed abstraction'):
@@ -40,7 +42,7 @@ class SA(SelfAware):
 class Rectangle(SA):
 
     def __init__(self, width=1, height=1, nametag='unnamed'):
-        super().__init__(nametag=nametag)
+        SA.__init__(self, nametag)
         self.w = width
         self.h = height
 
@@ -54,7 +56,7 @@ class Rectangle(SA):
 
 class Placeable(SA):
     def __init__(self, location=None, position_x=0, position_y=0, limit_x=None, limit_y=None, nametag='unnamed'):
-        super().__init__(nametag=nametag)
+        SA.__init__(self, nametag)
         self.pos_x = position_x
         self.pos_y = position_y
         self.loc = location
@@ -88,7 +90,7 @@ class Drawable(Rectangle):
 
 class Colorable(Drawable):
     def __init__(self, color_back=B_BLACK, color_fore=F_DIM_WHITE, nametag='unnamed'):
-        super().__init__(nametag=nametag)
+        SA.__init__(self, nametag)
         self.col_b = color_back
         self.col_f = color_fore
 
@@ -115,9 +117,10 @@ class ReDrawable(Drawable, Changeable):
 class Movable(Drawable, Placeable):
     turbo_counter = 0
 
-    def __init__(self, location=None, width=1, height=1, pos_x=0, pos_y=0, nametag='unnamed'):
+    def __init__(self, location=None, width=1, height=1, pos_x=0, pos_y=0, 
+                 limit_x=None, limit_y=None, nametag='unnamed'):
         Rectangle.__init__(self, width, height, nametag)
-        Placeable.__init__(self, location, pos_x, pos_y)
+        Placeable.__init__(self, location, pos_x, pos_y, limit_x, limit_y, nametag)
 
     def report_move(self):
         pass
@@ -212,7 +215,7 @@ class Resizable(ReDrawable):
 
 class Selectable(SA):
     def __init__(self, master=None, nametag='unnamed'):
-        super().__init__(nametag)
+        SA.__init__(self, nametag)
         self.master = master
         try: self.number_tag = master.subs.index(self) if master else None
         except: 
@@ -242,7 +245,7 @@ class Selectable(SA):
 
 class Container(SA):
     def __init__(self, storage=None, nametag='unnamed'):
-        super().__init__(nametag)
+        SA.__init__(self, nametag)
         self.stor = storage if storage else []
 
     def __repr__(self):
@@ -254,8 +257,9 @@ class Container(SA):
 ########################################################################################
 
 class Selecting(Container):
-    def __init__(self, storage=None, applicants=None, subordinate=None, nametag='unnamed'):
-        super().__init__(storage, nametag)
+    def __init__(self, storage=None, applicants=None, subordinate=None,
+                 nametag='unnamed'):
+        Container.__init__(self, storage, nametag)
         
         self.subs = []
         
@@ -274,28 +278,27 @@ class Selecting(Container):
         self.subor = subordinate
         
         if self.subor: self.selected = self.subs.index(subordinate)
-        else: self.selected = 0 if self.subs else None
-
-
+        elif self.subs: self.selected = 0
+        else: self.selected = None
+            
     def select_next(self):
         pass
 
     def select_prev(self):
         pass
         
-
     def __repr__(self):
         if self.subs == self.stor:
             return str(self.selected)+'/'+str(len(self.subs))
         else:
-            return str(self.selected)+'/'+str(len(self.subs)) + ', ' + super().__repr__()
+            return str(self.selected)+'/'+str(len(self.subs)) + ', ' + Container.__repr__(self)
 
     def __str__(self):
         nametext = ' ('+self.subor.nametag+')' if self.subor else ''
         if self.subs is self.stor:
             return '#'*bool(self.selected)+str(self.selected)+nametext+' is selected among '+str(len(self.subs))+' subordinates'
         else:
-            return '#'*bool(self.selected)+str(self.selected)+nametext+' is selected among '+str(len(self.subs))+' subordinates' + '\n' + super().__str__()
+            return '#'*bool(self.selected)+str(self.selected)+nametext+' is selected among '+str(len(self.subs))+' subordinates' + '\n' + Container.__str__(self)
 
 ########################################################################################
 
@@ -314,60 +317,79 @@ class Pressable(Selectable, Commanding):
 
 ########################################################################################
 
-class KeyCallable(SA):
-    def __init__(self, key_dictionary=None, nametag='unnamed'):
-        super().__init__(nametag)
+class KeyCallable(Selectable):
+    def __init__(self, key_dictionary=None, master=None, nametag='unnamed'):
+        Selectable.__init__(self, master, nametag)
         self.key_dic = key_dictionary if key_dictionary else {}
+        self.del_keys = []; self.add_keys = []
+        self.key_upd = [self.del_keys, self.add_keys]
 
     def __call__(self, key=None):
         if key and key in list(self.key_dic): 
-            try: self.key_dic[key][0](self.key_dic[key][1])
-            except: print('action for '+key+"isn't worth it!")
-        else: pass
+            try:  self.key_dic[key][0](self.key_dic[key][1])
+            except:  print('action for '+key+"isn't worth it!")
+            return True, self.key_upd
+        else: return False, self.key_upd
 
     def __repr__(self):
         key_strings = []
         for key in self.key_dic.keys():
             key_string = key+': '+self.key_dic[key][2] if len(self.key_dic[key])==3 else key+': unannounced command'
             key_strings.append(key_string)
-        return '{'+',\n '.join(key_strings)+'}'
+        return Selectable.__repr__(self)+', does\n{'+',\n '.join(key_strings)+'}'
 
     def __str__(self):
         key_strings = []
         for key in self.key_dic.keys():
             key_string = key+': '+self.key_dic[key][2] if len(self.key_dic[key])==3 else key+': unannounced command'
             key_strings.append(key_string)
-        return 'Ready to act on hotkeys:\n'+';\n'.join(key_strings)
+        return Selectable.__str__(self)+'\nReady to act on hotkeys:\n'+';\n'.join(key_strings)
 
 ########################################################################################
 
 class KeyRelay(KeyCallable):
-    def __init__(self, key_dictionary=None, subs_key_dictionary=None, 
-                 key_receiver=None, nametag='unnamed'):
-        super().__init__(key_dictionary, nametag)
-        self.subs_key_dic = subs_key_dictionary if subs_key_dictionary else []
+    def __init__(self, key_dictionary=None, subs_keys=None, master=None,
+                 nametag='unnamed'):
+        KeyCallable.__init__(self, key_dictionary, master, nametag)
+        self.subs_keys = subs_keys if subs_keys else []
         
-        try: self.pipe = self.subor if not self.pipe else key_receiver
-        except: self.pipe = key_receiver
-
     def __call__(self, key=None):
-        if key and key in list(self.key_dic): 
-            try: self.key_dic[key][0](self.key_dic[key][1])
-            except: print('action for '+key+"isn't worth it!")
-        elif key and key in self.subs_key_dic: 
-            done = self.pipe(key)
-            if not done: return False
-        else: return False
+        if not key: return
+        elif key and key in list(self.key_dic):
+            done, key_upd = KeyCallable.__call__(self, key)
+            if done: return True, key_upd
+        elif key and key in self.subs_keys:
+            done, key_upd = self.subor(key)
+            self.key_upd[0], self.key_upd[1] = list(key_upd[0]), list(key_upd[1])
+            if key_upd[0]:
+                for del_key in key_upd[0]:
+                    while del_key in self.subs_keys: self.subs_keys.remove(del_key)
+                key_upd[0].clear()
+            if key_upd[1]:
+                for add_key in key_upd[1]: self.subs_keys.append(add_key)
+                key_upd[1].clear()
+            if not done:
+                while key in self.subs_keys: self.subs_keys.remove(key)
+                return False, key_upd
+        else: return False, self.key_upd
 
     def __repr__(self):
-        return super().__repr__()+'\n'+str(self.subs_key_dic)
+        return KeyCallable.__repr__(self)+'\n'+str(self.subs_keys)
 
     def __str__(self):
-        
-        keys = '\n'+super().__str__() if self.key_dic else ''
-        if self.subs_key_dic:
-            keys += '\nor send deeper keys:\n'+', '.join(self.subs_key_dic)
+        keys = '\n'+KeyCallable.__str__(self) if self.key_dic else ''
+        if self.subs_keys:
+            keys += '\nor send deeper keys:\n'+', '.join(self.subs_keys)
         return keys
+
+########################################################################################
+
+class KeySender(KeyRelay):
+
+    def __call__(self):
+        key = key_choice(list(self.key_dic)+self.subs_keys)
+        KeyRelay.__call__(self, key)
+
 
 ########################################################################################
 

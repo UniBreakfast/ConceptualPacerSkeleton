@@ -78,7 +78,7 @@ overview_string=[]
 for y in overview_linear:
         overview_string.append(''.join(y))
 
-#del overview_string[-1]
+del overview_string[-1]
 print(end=''.join(overview_string))
 
 print(overview_string[:25])

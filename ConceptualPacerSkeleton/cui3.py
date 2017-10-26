@@ -1,4 +1,3 @@
-from keychoice     import *
 from cui3toolbox   import *
 from cui3abstracts import *
 
@@ -7,43 +6,44 @@ from cui3abstracts import *
 
 
 # Центр, управляющий всем происходящим.
-class Control(Disposing, Selecting):
-    def __init__(self, nametag='unnamed'):
-        super().__init__(nametag=nametag)
+class Control(Disposing, Selecting, KeySender):
+    def __init__(self, storage=None, applicants=None, subordinate=None,
+                 key_dictionary=None, subs_keys=None, nametag='unnamed'):
+        Selecting.__init__(self, storage, applicants, subordinate)
+        KeySender.__init__(self, key_dictionary, subs_keys, nametag=nametag)
         self.selected = 0
         self.subor = ViewPort(self, nametag='default')
-        self.keys = {'Up': 'control: Up', 'Down': 'control: Down',
-                     'Right': 'control: Right', 'Left': 'control: Left'}
-        self.subs_keys = ['Tab', 'Enter', 'Delete']
 
     def __call__(self):
         while True:
             self.subor()
-            choice = key_choice(list(self.keys)+self.subs_keys)
-            if choice in list(self.keys): print(self.keys[choice])
-            else: self.subor(choice)
+            KeySender.__call__(self)
 
+    def __repr__(self):
+        return Selecting.__repr__(self)+KeySender.__repr__(self)
+
+    def __str__(self):
+        return Selecting.__str__(self)+KeySender.__str__(self)
 
 
 # "Илюминатор", через который пользователь видит часть overlayer-a.
-class ViewPort(Movable, Resizable, Disposable, Disposing, 
-               Selectable, Selecting, KeyRelay):
+class ViewPort(Movable, Resizable, Disposable, Disposing, Selecting, KeyRelay):
     def __init__(self, master, location=None, width=MAX_WIDTH, height=MAX_HEIGHT, 
-                 position_x=0, position_y=0, 
-                 key_dictionary=None, subs_key_dictionary=None, nametag='unnamed'):
-        Movable.__init__(self, location, width, height, position_x, position_y)
-        Selectable.__init__(self, master, nametag)
-        Selecting.__init__(self)
-        KeyRelay.__init__(self, key_dictionary, subs_key_dictionary)
-
-
+                 position_x=0, position_y=0, limit_x=None, limit_y=None, 
+                 storage=None, applicants=None, subordinate=None,
+                 key_dictionary=None, subs_keys=None, nametag='unnamed'):
+        Movable.__init__(self, location, width, height, position_x, position_y, 
+                         limit_x, limit_y)
+        Selecting.__init__(self, storage, applicants, subordinate)
+        KeyRelay.__init__(self, key_dictionary, subs_keys, master, nametag)
+        
     def __repr__(self):
         return (Movable.__repr__(self)+', '+Selecting.__repr__(self)+', '+
-                Selectable.__repr__(self)+'\n'+KeyRelay.__repr__(self))
+                '\n'+KeyRelay.__repr__(self))
 
     def __str__(self):
-        return (Movable.__str__(self)+'\n'+Selecting.__str__(self)+'\n'+
-                Selectable.__str__(self)+KeyRelay.__str__(self))
+        return (Movable.__str__(self)+'\n'+Selecting.__str__(self)+
+                KeyRelay.__str__(self))
 
 
 # Двухмерные массивы - символьные карты, слои, на которые выводятся доски.
