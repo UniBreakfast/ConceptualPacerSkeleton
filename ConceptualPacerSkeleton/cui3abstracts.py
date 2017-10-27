@@ -102,6 +102,20 @@ class Colorable(Drawable):
 
 ########################################################################################
 
+class Palettable(Drawable):
+    def __init__(self, color_back=B_BLACK, color_fore=F_DIM_WHITE, nametag='unnamed'):
+        SA.__init__(self, nametag)
+        self.col_b = color_back
+        self.col_f = color_fore
+
+    def __repr__(self):
+        return str((color_dic[self.col_b], color_dic[self.col_f]))
+
+    def __str__(self):
+        return 'colored: ' +self.col_b+self.col_f+'   Like THIS   '+RESET_COLORS
+
+########################################################################################
+
 class Changeable(SA):
     changed = False
 
@@ -221,6 +235,7 @@ class Selectable(SA):
         except: 
             if master: 
                 master.subs.append(self)
+                if len(master.subs) == 1: master.subor = self; master.selected = 0
                 self.number_tag = master.subs.index(self)
         if master and (master.subor is self or master.selected == self.number_tag):
             self.chosen = True
@@ -343,7 +358,8 @@ class KeyCallable(Selectable):
         for key in self.key_dic.keys():
             key_string = key+': '+self.key_dic[key][2] if len(self.key_dic[key])==3 else key+': unannounced command'
             key_strings.append(key_string)
-        return Selectable.__str__(self)+'\nReady to act on hotkeys:\n'+';\n'.join(key_strings)
+        keys = '\nReady to act on hotkeys:\n'+';\n'.join(key_strings) if self.key_dic else ''
+        return Selectable.__str__(self)+keys
 
 ########################################################################################
 
@@ -377,7 +393,7 @@ class KeyRelay(KeyCallable):
         return KeyCallable.__repr__(self)+'\n'+str(self.subs_keys)
 
     def __str__(self):
-        keys = '\n'+KeyCallable.__str__(self) if self.key_dic else ''
+        keys = '\n'+KeyCallable.__str__(self)
         if self.subs_keys:
             keys += '\nor send deeper keys:\n'+', '.join(self.subs_keys)
         return keys

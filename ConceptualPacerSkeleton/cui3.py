@@ -46,6 +46,49 @@ class ViewPort(Movable, Resizable, Disposable, Disposing, Selecting, KeyRelay):
                 KeyRelay.__str__(self))
 
 
+
+# Доски, на которых расположены смысловые элементы (аналог окон Windows).
+class Board(Movable, Resizable, Disposable, Selecting, KeyCallable):
+    def __init__(self, master, location=None, width=MAX_WIDTH//2, height=MAX_HEIGHT//2, 
+                 position_x=0, position_y=0, limit_x=None, limit_y=None, 
+                 storage=None, applicants=None, subordinate=None,
+                 key_dictionary=None, nametag='unnamed'):
+        Movable.__init__(self, location, width, height, position_x, position_y, 
+                         limit_x, limit_y)
+        Selecting.__init__(self, storage, applicants, subordinate)
+        KeyCallable.__init__(self, key_dictionary, master, nametag)
+        
+    def __repr__(self):
+        return (Movable.__repr__(self)+', '+Selecting.__repr__(self)+', '+
+                '\n'+KeyCallable.__repr__(self))
+
+    def __str__(self):
+        return (Movable.__str__(self)+'\n'+Selecting.__str__(self)+'\n'+
+                KeyCallable.__str__(self))
+    
+    
+    
+    
+    
+    
+    
+    
+    #def __init__(self, title=None, palette=Palette(), width=None, height=None, pos_x=None, pos_y=None):
+        
+    #    self.palette    = palette
+    #    self.w = width
+    #    self.h = height
+    #    self.pos_x = pos_x
+    #    self.pos_y = pos_y
+
+    #    self.framelines = []
+    #    self.hotkeys    = []
+        
+    #    self.selected_item_id   = 1
+    #    self.selectable_id      = 0
+    #    self.key_dic            = {}
+
+
 # Двухмерные массивы - символьные карты, слои, на которые выводятся доски.
 class Layer:
     def __init__(self, control):
@@ -98,25 +141,6 @@ class Palette:
             self.selected_button_colors = selected_button_colors
         elif type(selected_button_colors) is tuple and len(selected_button_colors) == 2:
             self.selected_button_colors = ColorPair(*selected_button_colors)
-
-
-
-# Доски, на которых расположены смысловые элементы (аналог окон Windows).
-class Board:
-    def __init__(self, title=None, palette=Palette(), width=None, height=None, pos_x=None, pos_y=None):
-        
-        self.palette    = palette
-        self.w = width
-        self.h = height
-        self.pos_x = pos_x
-        self.pos_y = pos_y
-
-        self.framelines = []
-        self.hotkeys    = []
-        
-        self.selected_item_id   = 1
-        self.selectable_id      = 0
-        self.key_dic            = {}
 
 
 
