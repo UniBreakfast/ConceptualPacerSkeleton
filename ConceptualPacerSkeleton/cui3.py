@@ -6,11 +6,12 @@ from cui3abstracts import *
 
 
 # Центр, управляющий всем происходящим.
-class Control(Disposing, Selecting, KeySender):
-    def __init__(self, storage=None, applicants=None, subordinate=None,
-                 key_dictionary=None, subs_keys=None, nametag='unnamed'):
-        Selecting.__init__(self, storage, applicants, subordinate)
-        KeySender.__init__(self, key_dictionary, subs_keys, nametag=nametag)
+class Control(Disposing, KeySender, Container, Changeable):
+    def __init__(self, subordinate=None, key_dictionary=None, 
+                 nametag='unnamed'):
+        KeySender.__init__(self, None, subordinate, None, key_dictionary)
+        Container.__init__(self)
+        Changeable.__init__(self, nametag)
         self.selected = 0
         self.subor = ViewPort(self, nametag='default')
 
@@ -20,51 +21,62 @@ class Control(Disposing, Selecting, KeySender):
             KeySender.__call__(self)
 
     def __repr__(self):
-        return Selecting.__repr__(self)+KeySender.__repr__(self)
+        return (KeySender.__repr__(self)+'\n'*bool(KeySender.__repr__(self))+
+                Container.__repr__(self))
 
     def __str__(self):
-        return Selecting.__str__(self)+KeySender.__str__(self)
+        return (KeySender.__str__(self)+'\n'*bool(KeySender.__str__(self))+
+                Container.__str__(self))
 
 
 # "Илюминатор", через который пользователь видит часть overlayer-a.
-class ViewPort(Movable, Resizable, Disposable, Disposing, Selecting, KeyRelay):
+class ViewPort(Movable, Resizable, Disposable, Disposing, KeyRelay, Container):
     def __init__(self, master, location=None, width=MAX_WIDTH, height=MAX_HEIGHT, 
                  position_x=0, position_y=0, limit_x=None, limit_y=None, 
-                 storage=None, applicants=None, subordinate=None,
-                 key_dictionary=None, subs_keys=None, nametag='unnamed'):
+                 applicants=None, subordinate=None, key_dictionary=None, 
+                 nametag='unnamed'):
         Movable.__init__(self, location, width, height, position_x, position_y, 
                          limit_x, limit_y)
-        Selecting.__init__(self, storage, applicants, subordinate)
-        KeyRelay.__init__(self, key_dictionary, subs_keys, master, nametag)
+        KeyRelay.__init__(self, applicants, subordinate, master, key_dictionary)
+        Container.__init__(self, None, nametag)
+
         
     def __repr__(self):
-        return (Movable.__repr__(self)+', '+Selecting.__repr__(self)+', '+
-                '\n'+KeyRelay.__repr__(self))
+        return (Movable.__repr__(self)+'\n'*bool(Movable.__repr__(self))+
+                KeyRelay.__repr__(self)+'\n'*bool(KeyRelay.__repr__(self))+
+                Container.__repr__(self) )
 
     def __str__(self):
-        return (Movable.__str__(self)+'\n'+Selecting.__str__(self)+
-                KeyRelay.__str__(self))
+        return (Movable.__str__(self)+'\n'*bool(Movable.__str__(self))+
+                KeyRelay.__str__(self)+'\n'*bool(KeyRelay.__str__(self))+
+                Container.__str__(self) )
 
 
 
 # Доски, на которых расположены смысловые элементы (аналог окон Windows).
-class Board(Movable, Resizable, Disposable, Selecting, KeyCallable):
+class Board(Movable, Resizable, Disposable, Selecting, KeyCallable, Container):
     def __init__(self, master, location=None, width=MAX_WIDTH//2, height=MAX_HEIGHT//2, 
                  position_x=0, position_y=0, limit_x=None, limit_y=None, 
-                 storage=None, applicants=None, subordinate=None,
-                 key_dictionary=None, nametag='unnamed'):
+                 applicants=None, subordinate=None,
+                 key_dictionary=None, items=None, nametag='unnamed'):
         Movable.__init__(self, location, width, height, position_x, position_y, 
                          limit_x, limit_y)
-        Selecting.__init__(self, storage, applicants, subordinate)
-        KeyCallable.__init__(self, key_dictionary, master, nametag)
+        Selecting.__init__(self, applicants, subordinate)
+        KeyCallable.__init__(self, master, key_dictionary)
+        Container.__init__(self, items, nametag)
+
         
     def __repr__(self):
-        return (Movable.__repr__(self)+', '+Selecting.__repr__(self)+', '+
-                '\n'+KeyCallable.__repr__(self))
+        return (Movable.__repr__(self)+', '+
+                Selecting.__repr__(self)+',\n'*bool(Selecting.__repr__(self))+
+                KeyCallable.__repr__(self)+
+                Container.__repr__(self) )
 
     def __str__(self):
-        return (Movable.__str__(self)+'\n'+Selecting.__str__(self)+'\n'+
-                KeyCallable.__str__(self))
+        return (Movable.__str__(self)+'\n'+
+                Selecting.__str__(self)+'\n'*bool(Selecting.__str__(self))+
+                KeyCallable.__str__(self)+
+                Container.__str__(self) )
     
     
     

@@ -48,13 +48,13 @@ def key_choice(*keyboard_items):
                 elif str(prechoice)+str(choice) in meaning and meaning[str(prechoice)+str(choice)] == 'Alt+F4': quit()
                 else:
                     prechoice = None
-                    if 'silent' != keyboard_items[-1]:
+                    if keyboard_items and keyboard_items[-1] != 'silent':
                         print(end='... такой вариант не предлагается, будьте внимательны...\r')
                     firstTry = False
             elif choice in meaning and meaning[choice] in keyboard_items:
                 return meaning[choice]
             elif firstTry:
-                if 'silent' != keyboard_items[-1]:
+                if keyboard_items and keyboard_items[-1] != 'silent':
                     print(end='... такой вариант не предлагается, будьте внимательны...\r')
                 firstTry = False
                     

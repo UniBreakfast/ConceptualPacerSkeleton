@@ -70,6 +70,9 @@
     <Compile Include="module2.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="module3.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="pacer1onCUI3.py">
       <SubType>Code</SubType>
     </Compile>

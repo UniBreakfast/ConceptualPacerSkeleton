@@ -26,7 +26,7 @@ def dl(obj): print('\n'.join(dir(obj)))
 #disredund_chmp(linear)
 #show_chmp(linear)
 #input()
-board1 = Board(pacer.subor, limit_x=pacer.subor.w, limit_y=pacer.subor.h,
+pacer.subor.subor = Board(pacer.subor, limit_x=pacer.subor.w, limit_y=pacer.subor.h,
                nametag='board1')
 
 

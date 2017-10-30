@@ -231,70 +231,64 @@ class Selectable(SA):
     def __init__(self, master=None, nametag='unnamed'):
         SA.__init__(self, nametag)
         self.master = master
-        try: self.number_tag = master.subs.index(self) if master else None
-        except: 
-            if master: 
-                master.subs.append(self)
-                if len(master.subs) == 1: master.subor = self; master.selected = 0
-                self.number_tag = master.subs.index(self)
-        if master and (master.subor is self or master.selected == self.number_tag):
+        if master and not master.subs:
+            master.subs.append(self)
+            master.subor = self
+            master.selected = 0
             self.chosen = True
         else: self.chosen = False
 
     def __repr__(self):
         if self.chosen: 
-            return "chosen by "+self.master.nametag+', has a #'+str(self.number_tag)
+            return ("chosen by "+self.master.nametag+', has a #'+
+                    str(self.master.subs.index(self)) )
         elif self.master: 
-            return "neglected by "+self.master.nametag+', #'+str(self.number_tag)
+            return ("neglected by "+self.master.nametag+', #'+
+                    str(self.master.subs.index(self)) )
         else: return "stray"
 
     def __str__(self):
         if self.chosen: 
-            return "chosen by "+self.master.nametag+' among '+str(len(self.master.subs))+', has a #'+str(self.number_tag)
+            return ("chosen by "+self.master.nametag+' among '+
+                    str(len(self.master.subs))+', has a #'+
+                    str(self.master.subs.index(self)) )
         elif self.master: 
-            return "neglected by "+self.master.nametag+' among '+str(len(self.master.subs))+', has a #'+str(self.number_tag)
+            return ("neglected by "+self.master.nametag+' among '+
+                    str(len(self.master.subs))+', has a #'+
+                    str(self.master.subs.index(self)) )
         else: return "stray, without master"
             
 
 ########################################################################################
 
 class Container(SA):
-    def __init__(self, storage=None, nametag='unnamed'):
+    def __init__(self, items=None, nametag='unnamed'):
         SA.__init__(self, nametag)
-        self.stor = storage if storage else []
+        self.items = items if items else []
 
     def __repr__(self):
-        return str(self.stor)
+        return str(self.items)
 
     def __str__(self):
-        return 'contains: '+', '.join(self.stor) if self.stor else 'empty container'
+        return 'contains: '+', '.join(self.items) if self.items else 'empty container'
 
 ########################################################################################
 
-class Selecting(Container):
-    def __init__(self, storage=None, applicants=None, subordinate=None,
-                 nametag='unnamed'):
-        Container.__init__(self, storage, nametag)
+class Selecting(SA):
+    def __init__(self, applicants=None, subordinate=None, nametag='unnamed'):
+        SA.__init__(self, nametag)
         
-        self.subs = []
-        
-        if applicants:
-            if storage:
-                if type(storage) is list:
-                    self.subs = storage + applicants
-                else: self.subs = list(storage) + applicants
-            else: self.subs = list(aplicants)
-        elif storage: 
-            self.subs = storage if type(storage) is list else list(storage)
+        self.subs = list(aplicants) if applicants else []
         
         if subordinate and subordinate not in self.subs:
             self.subs.append(subordinate)
-        
-        self.subor = subordinate
+                
+        self.subor = subordinate if subordinate else None
         
         if self.subor: self.selected = self.subs.index(subordinate)
-        elif self.subs: self.selected = 0
+        elif self.subs: self.selected = 0; self.subor = self.subs[0]
         else: self.selected = None
+        
             
     def select_next(self):
         pass
@@ -303,17 +297,14 @@ class Selecting(Container):
         pass
         
     def __repr__(self):
-        if self.subs == self.stor:
-            return str(self.selected)+'/'+str(len(self.subs))
-        else:
-            return str(self.selected)+'/'+str(len(self.subs)) + ', ' + Container.__repr__(self)
+        if self.subs: return str(self.selected)+'/'+str(len(self.subs))
+        else: return ''
 
     def __str__(self):
-        nametext = ' ('+self.subor.nametag+')' if self.subor else ''
-        if self.subs is self.stor:
-            return '#'*bool(self.selected)+str(self.selected)+nametext+' is selected among '+str(len(self.subs))+' subordinates'
-        else:
-            return '#'*bool(self.selected)+str(self.selected)+nametext+' is selected among '+str(len(self.subs))+' subordinates' + '\n' + Container.__str__(self)
+        if self.subs: 
+            return ('#'+str(self.selected)+' ('+self.subor.nametag+
+                    ') is selected among '+str(len(self.subs))+' subordinates')
+        else: return ''
 
 ########################################################################################
 
@@ -333,9 +324,10 @@ class Pressable(Selectable, Commanding):
 ########################################################################################
 
 class KeyCallable(Selectable):
-    def __init__(self, key_dictionary=None, master=None, nametag='unnamed'):
+    def __init__(self, master=None, key_dictionary=None, nametag='unnamed'):
         Selectable.__init__(self, master, nametag)
         self.key_dic = key_dictionary if key_dictionary else {}
+        
         self.del_keys = []; self.add_keys = []
         self.key_upd = [self.del_keys, self.add_keys]
 
@@ -355,19 +347,22 @@ class KeyCallable(Selectable):
 
     def __str__(self):
         key_strings = []
-        for key in self.key_dic.keys():
-            key_string = key+': '+self.key_dic[key][2] if len(self.key_dic[key])==3 else key+': unannounced command'
-            key_strings.append(key_string)
+        if self.key_dic:
+            for key in self.key_dic.keys():
+                key_string = key+': '+self.key_dic[key][2] if len(self.key_dic[key])==3 else key+': unannounced command'
+                key_strings.append(key_string)
         keys = '\nReady to act on hotkeys:\n'+';\n'.join(key_strings) if self.key_dic else ''
         return Selectable.__str__(self)+keys
 
 ########################################################################################
 
-class KeyRelay(KeyCallable):
-    def __init__(self, key_dictionary=None, subs_keys=None, master=None,
-                 nametag='unnamed'):
-        KeyCallable.__init__(self, key_dictionary, master, nametag)
-        self.subs_keys = subs_keys if subs_keys else []
+class KeyRelay(KeyCallable, Selecting):
+    def __init__(self, applicants=None, subordinate=None, 
+                 master=None, key_dictionary=None, nametag='unnamed'):
+        Selecting.__init__(self, applicants, subordinate)
+        KeyCallable.__init__(self, master, key_dictionary, nametag)
+
+        self.subs_keys = []
         
     def __call__(self, key=None):
         if not key: return
@@ -390,13 +385,16 @@ class KeyRelay(KeyCallable):
         else: return False, self.key_upd
 
     def __repr__(self):
-        return KeyCallable.__repr__(self)+'\n'+str(self.subs_keys)
+        return (Selecting.__repr__(self)+'\n'*bool(Selecting.__repr__(self))+
+                KeyCallable.__repr__(self)+'\n'+str(self.subs_keys) )
 
     def __str__(self):
         keys = '\n'+KeyCallable.__str__(self)
         if self.subs_keys:
-            keys += '\nor send deeper keys:\n'+', '.join(self.subs_keys)
-        return keys
+            subs_keys_str = '\n'+'or send deeper keys:\n'+', '.join(self.subs_keys)
+        else: subs_keys_str = ''
+        return (Selecting.__str__(self)+'\n'*bool(Selecting.__str__(self))+
+                KeyCallable.__str__(self)+subs_keys_str)
 
 ########################################################################################
 
