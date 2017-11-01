@@ -117,13 +117,23 @@ class Palettable(Drawable):
 ########################################################################################
 
 class Changeable(SA):
-    changed = False
+    changed = True
+
+    def change_up(self):
+        self.changed = True
+        if self.container:
+            try: self.container.change_up()
+            except: pass
+        if self.master:
+            try: self.master.change_up()
+            except: pass
 
 ########################################################################################
 
 class ReDrawable(Drawable, Changeable):
-    curr_frame = None
-    prev_frame = None
+    #curr_frame = None
+    #prev_frame = None
+    pass
 
 
 ########################################################################################
@@ -224,7 +234,6 @@ class Resizable(ReDrawable):
 
     def set_size(self, width, height):
         pass
-
 ########################################################################################
 
 class Selectable(SA):
@@ -265,12 +274,78 @@ class Container(SA):
     def __init__(self, items=None, nametag='unnamed'):
         SA.__init__(self, nametag)
         self.items = items if items else []
+        for item in self.items: item.container = self
+                
 
     def __repr__(self):
-        return str(self.items)
+        if self.items:
+            items_str = []
+            for item in self.items: items_str.append(item.nametag)
+            return str(items_str)
+        else: return '[]'
 
     def __str__(self):
-        return 'contains: '+', '.join(self.items) if self.items else 'empty container'
+        if self.items:
+            items_str = []
+            for item in self.items: items_str.append(item.nametag)
+        return 'contains: '+', '.join(items_str) if self.items else 'empty container'
+
+########################################################################################
+
+class Item(SA):
+    def __init__(self, container=None, nametag='unnamed'):
+        SA.__init__(self, nametag)
+        self.container = container if container else None
+        if container and not self in container.items: 
+            container.items.append(self)
+            container.changed = True
+
+
+    def __repr__(self):
+        if self.container: return str(self.container.nametag)
+        else: return 'uncontained'
+
+    def __str__(self):
+        return 'stored in: '+self.container.nametag if self.container else 'uncontained'
+
+########################################################################################
+
+class Showing(ReDrawable, Container):
+    def __init__(self, underlay=None, width=MAX_WIDTH, height=MAX_HEIGHT,
+                 nametag='unnamed'):
+        ReDrawable.__init__(self, width, height)
+        Container.__init__(self, None, nametag)
+
+
+        if underlay: self.underlay = underlay
+        else:        self.underlay = underlay_chmp(self.master.h, self.master.w)
+        self.overlay = blank_chmp(self.h, self.w)
+
+    def __call__(self):
+        if self.changed:
+            self.changed = False
+
+            topview = blank_chmp(self.lim_y, self.lim_x)
+            if self.subs:
+                for layer in self.items:
+                    if layer.changed:
+                        layer()
+                        layer.changed = False
+                    topview = topview_chmp(topview, layer.chmp)
+            
+            topview = topview_chmp(topview, self.underlay)
+            self.frame = topview
+            cropped_topview = crop_chmp(topview, self.w, self.h, self.pos_x, self.pos_y)
+            overview = topview_chmp(self.overlay, cropped_topview)
+            linear_overview = linear_chmp(overview)
+            disredund_chmp(linear_overview)
+            show_chmp(linear_overview)
+        else:
+            topview = self.frame
+            overview = topview_chmp(self.overlay, topview)
+            linear_overview = linear_chmp(overview)
+            disredund_chmp(linear_overview)
+            show_chmp(linear_overview)
 
 ########################################################################################
 
@@ -291,7 +366,13 @@ class Selecting(SA):
         
             
     def select_next(self):
-        pass
+        if self.selected < len(self.subs)-1:
+            self.selected += 1
+            self.subor = self.subs[self.selected]
+        else:
+            self.selected = 0
+            self.subor = self.subs[0]
+
 
     def select_prev(self):
         pass
@@ -333,7 +414,9 @@ class KeyCallable(Selectable):
 
     def __call__(self, key=None):
         if key and key in list(self.key_dic): 
-            try:  self.key_dic[key][0](self.key_dic[key][1])
+            try:  
+                if self.key_dic[key][1]: self.key_dic[key][0](self.key_dic[key][1])
+                else:                    self.key_dic[key][0]()
             except:  print('action for '+key+"isn't worth it!")
             return True, self.key_upd
         else: return False, self.key_upd
@@ -401,7 +484,7 @@ class KeyRelay(KeyCallable, Selecting):
 class KeySender(KeyRelay):
 
     def __call__(self):
-        key = key_choice(list(self.key_dic)+self.subs_keys)
+        key = key_choice(list(self.key_dic)+self.subs_keys+['silent'])
         KeyRelay.__call__(self, key)
 
 

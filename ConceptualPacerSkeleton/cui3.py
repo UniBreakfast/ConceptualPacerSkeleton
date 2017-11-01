@@ -6,14 +6,15 @@ from cui3abstracts import *
 
 
 # Центр, управляющий всем происходящим.
-class Control(Disposing, KeySender, Container, Changeable):
-    def __init__(self, subordinate=None, key_dictionary=None, 
+class Control(Disposing, KeySender, Container, Changeable, Rectangle):
+    def __init__(self, subordinate=None, key_dictionary=None,
+                 width=MAX_WIDTH, height=MAX_HEIGHT, 
                  nametag='unnamed'):
         KeySender.__init__(self, None, subordinate, None, key_dictionary)
         Container.__init__(self)
-        Changeable.__init__(self, nametag)
+        Rectangle.__init__(self, width, height, nametag)
         self.selected = 0
-        self.subor = ViewPort(self, nametag='default')
+        self.subor = ViewPort(self, self, nametag='default')
 
     def __call__(self):
         while True:
@@ -30,15 +31,29 @@ class Control(Disposing, KeySender, Container, Changeable):
 
 
 # "Илюминатор", через который пользователь видит часть overlayer-a.
-class ViewPort(Movable, Resizable, Disposable, Disposing, KeyRelay, Container):
+class ViewPort(Movable, Resizable, Disposable, Disposing, KeyRelay, Showing):
     def __init__(self, master, location=None, width=MAX_WIDTH, height=MAX_HEIGHT, 
                  position_x=0, position_y=0, limit_x=None, limit_y=None, 
                  applicants=None, subordinate=None, key_dictionary=None, 
-                 nametag='unnamed'):
+                 underlay=None, nametag='unnamed'):
         Movable.__init__(self, location, width, height, position_x, position_y, 
                          limit_x, limit_y)
         KeyRelay.__init__(self, applicants, subordinate, master, key_dictionary)
+        Showing.__init__(self, underlay, width, height)
         Container.__init__(self, None, nametag)
+
+
+    def __call__(self, key=None):
+        if not key:   Showing.__call__(self)
+        else: return KeyRelay.__call__(self, key)
+
+    def select_next(self):
+        super().select_next()
+        for i, layer in enumerate(self.items):
+            if self.subor is layer.board:
+                self.items = [layer]+self.items[:i]+self.items[i+1:]
+        self.changed = True
+
 
         
     def __repr__(self):
@@ -54,8 +69,9 @@ class ViewPort(Movable, Resizable, Disposable, Disposing, KeyRelay, Container):
 
 
 # Доски, на которых расположены смысловые элементы (аналог окон Windows).
-class Board(Movable, Resizable, Disposable, Selecting, KeyCallable, Container):
-    def __init__(self, master, location=None, width=MAX_WIDTH//2, height=MAX_HEIGHT//2, 
+class Board(Movable, Resizable, Disposable, Selecting, KeyCallable, Container, Item):
+    def __init__(self, container, master, colors, location=None, 
+                 width=MAX_WIDTH//2, height=MAX_HEIGHT//2, 
                  position_x=0, position_y=0, limit_x=None, limit_y=None, 
                  applicants=None, subordinate=None,
                  key_dictionary=None, items=None, nametag='unnamed'):
@@ -63,20 +79,33 @@ class Board(Movable, Resizable, Disposable, Selecting, KeyCallable, Container):
                          limit_x, limit_y)
         Selecting.__init__(self, applicants, subordinate)
         KeyCallable.__init__(self, master, key_dictionary)
-        Container.__init__(self, items, nametag)
+        Container.__init__(self, items)
+        Item.__init__(self, container)
+        Colorable.__init__(self, colors[0], colors[1], nametag)
+        if position_x+width  > location.w: location.w = position_x+width
+        if position_y+height > location.h: location.h = position_y+height
+        for sub in container.subs:
+            sub.items.append(Layer(sub, self))
+
+
+    def __call__(self, key=None):
+        if key: KeyCallable.__call__(self, key)
+        else: self.chmp = underlay_chmp(self.h, self.w, ' ', self.col_b, self.col_f)
 
         
     def __repr__(self):
         return (Movable.__repr__(self)+', '+
                 Selecting.__repr__(self)+',\n'*bool(Selecting.__repr__(self))+
                 KeyCallable.__repr__(self)+
-                Container.__repr__(self) )
+                Container.__repr__(self)+', '+
+                Item.__repr__(self) )
 
     def __str__(self):
         return (Movable.__str__(self)+'\n'+
                 Selecting.__str__(self)+'\n'*bool(Selecting.__str__(self))+
-                KeyCallable.__str__(self)+
-                Container.__str__(self) )
+                KeyCallable.__str__(self)+'\n'+
+                Container.__str__(self)+'\n'+
+                Item.__str__(self) )
     
     
     
@@ -102,12 +131,20 @@ class Board(Movable, Resizable, Disposable, Selecting, KeyCallable, Container):
 
 
 # Двухмерные массивы - символьные карты, слои, на которые выводятся доски.
-class Layer:
-    def __init__(self, control):
-        self.in_view = []
-        self.boards = []
-        self.control = control
+class Layer(ReDrawable, Item):
+    def __init__(self, viewport, board):
+        Rectangle.__init__(self, viewport.master.w, viewport.master.h)
+        #self.in_view = []
+        self.board = board
+        self.container = viewport
+        self.chmp = blank_chmp(self.h, self.w)
 
+    def __call__(self):
+        if self.board.changed:
+            self.board()
+            self.board.changed = False
+        self.chmp = blank_chmp(self.h, self.w)
+        write_to_chmp(self.chmp, self.board.chmp, self.board.pos_y, self.board.pos_x)
 
 #Пары цветов - цвет фона и цвет шрифта.
 class ColorPair:

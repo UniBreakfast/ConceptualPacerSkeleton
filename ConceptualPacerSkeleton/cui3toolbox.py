@@ -53,29 +53,42 @@ def curto(y=0, x=0):     print(end='\x1b['+str(y+1)+';'+str(x+1)+'H')
 def blank_chmp(y=H, x=W):
    return [[(None, None, None)]*x for row in range(y)]
 
-def underlay_chmp(y=H, x=W, char='.', b_color=B_BLACK, f_color=F_DIM_WHITE):
+def underlay_chmp(y=H, x=W, char='.', b_color=B_BLACK, f_color=F_GREY):
     return (((b_color, f_color, char),)*x,)*y
 
 def write_to_chmp(charmap, text, pos_y, pos_x, colors=None):
-    if colors:
-        for i, char in enumerate(text):
-            charmap[pos_y][pos_x+i] = (colors[0], colors[1], char)
+    if type(text) is str:
+        if colors:
+            for i, char in enumerate(text):
+                charmap[pos_y][pos_x+i] = (colors[0], colors[1], char)
+        else:
+            for i, char in enumerate(text):
+                charmap[pos_y][pos_x+i] = (charmap[pos_y][pos_x+i][0], 
+                                           charmap[pos_y][pos_x+i][1], char)
     else:
-        for i, char in enumerate(text):
-            charmap[pos_y][pos_x+i] = (charmap[pos_y][pos_x+i][0], 
-                                       charmap[pos_y][pos_x+i][1], char)
+        for j, line in enumerate(text):
+            for i, char in enumerate(line):
+                charmap[pos_y+j][pos_x+i] = char
 
 def topview_chmp(charmap, underlay):
-    topview = blank_chmp()
+    topview = blank_chmp(len(charmap), len(charmap[0]))
     for y, row in enumerate(charmap):
         for x, char in enumerate(row):
             if char[2]!=None:  topview[y][x] = char
             else:  topview[y][x] = underlay[y][x]
     return topview
 
+def crop_chmp(charmap, width=MAX_WIDTH, height=MAX_HEIGHT, 
+              position_x=0, position_y=0):
+    y_cropped_chmp = charmap[position_y:position_y+height]
+    x_cropped_chmp = []
+    for line in y_cropped_chmp: x_cropped_chmp.append(line[position_x:position_x+width])
+    return x_cropped_chmp
+
 from itertools import chain
 def linear_chmp(charmap):
-    return list(chain(*charmap))
+    linear = list(chain(*charmap))
+    return linear
 
 def disredund_chmp(linear_charmap):
     first_match=True
