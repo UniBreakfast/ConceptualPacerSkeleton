@@ -1,26 +1,36 @@
 
-W=MAX_WIDTH = 80;     H=MAX_HEIGHT = 50
 
 import colorama; colorama.init()
 
-F_WHITE   = '\x1b[37;1m';  F_DIM_WHITE   = '\x1b[37;2m';  B_DIM_WHITE   = '\x1b[47m'
-F_YELLOW  = '\x1b[33;1m';  F_DIM_YELLOW  = '\x1b[33;2m';  B_DIM_YELLOW  = '\x1b[43m'
-F_GREEN   = '\x1b[32;1m';  F_DIM_GREEN   = '\x1b[32;2m';  B_DIM_GREEN   = '\x1b[42m'
-F_CYAN    = '\x1b[36;1m';  F_DIM_CYAN    = '\x1b[36;2m';  B_DIM_CYAN    = '\x1b[46m'
-F_BLUE    = '\x1b[34;1m';  F_DIM_BLUE    = '\x1b[34;2m';  B_DIM_BLUE    = '\x1b[44m'
-F_MAGENTA = '\x1b[35;1m';  F_DIM_MAGENTA = '\x1b[35;2m';  B_DIM_MAGENTA = '\x1b[45m'
-F_RED     = '\x1b[31;1m';  F_DIM_RED     = '\x1b[31;2m';  B_DIM_RED     = '\x1b[41m'
-F_GREY    = '\x1b[30;1m';  F_BLACK       = '\x1b[30;2m';  B_BLACK       = '\x1b[40m'
+
+WHITE   = '\x1b[37;1m';   SILVER   = '\x1b[37;2m';   _SILVER   = '\x1b[47m'
+YELLOW  = '\x1b[33;1m';   OLIVE    = '\x1b[33;2m';   _OLIVE    = '\x1b[43m'
+GREEN   = '\x1b[32;1m';   LAUREL   = '\x1b[32;2m';   _LAUREL   = '\x1b[42m'
+CYAN    = '\x1b[36;1m';   TEAL     = '\x1b[36;2m';   _TEAL     = '\x1b[46m'
+BLUE    = '\x1b[34;1m';   NAVY     = '\x1b[34;2m';   _NAVY     = '\x1b[44m'
+MAGENTA = '\x1b[35;1m';   EGGPLANT = '\x1b[35;2m';   _EGGPLANT = '\x1b[45m'
+RED     = '\x1b[31;1m';   MAROON   = '\x1b[31;2m';   _MAROON   = '\x1b[41m'
+GREY    = '\x1b[30;1m';   BLACK    = '\x1b[30;2m';   _BLACK    = '\x1b[40m'
+
+WT = WHITE  ;  SV = SILVER  ;  _SV = _SILVER
+YL = YELLOW ;  OL = OLIVE   ;  _OL = _OLIVE
+GN = GREEN  ;  LR = LAUREL  ;  _LR = _LAUREL
+CN = CYAN   ;  TL = TEAL    ;  _TL = _TEAL
+BL = BLUE   ;  NV = NAVY    ;  _NV = _NAVY
+MG = MAGENTA;  EG = EGGPLANT;  _EG = _EGGPLANT
+RD = RED    ;  MR = MAROON  ;  _MR = _MAROON
+GR = GREY   ;  BK = BLACK   ;  _BK = _BLACK
+
 
 color_dic = {
-'\x1b[37;1m' : 'F_WHITE',  '\x1b[37;2m' : 'F_DIM_WHITE',  '\x1b[47m' : 'B_DIM_WHITE',
-'\x1b[33;1m' : 'F_YELLOW', '\x1b[33;2m' : 'F_DIM_YELLOW', '\x1b[43m' : 'B_DIM_YELLOW',
-'\x1b[32;1m' : 'F_GREEN',  '\x1b[32;2m' : 'F_DIM_GREEN',  '\x1b[42m' : 'B_DIM_GREEN',
-'\x1b[36;1m' : 'F_CYAN',   '\x1b[36;2m' : 'F_DIM_CYAN',   '\x1b[46m' : 'B_DIM_CYAN',
-'\x1b[34;1m' : 'F_BLUE',   '\x1b[34;2m' : 'F_DIM_BLUE',   '\x1b[44m' : 'B_DIM_BLUE',
-'\x1b[35;1m' : 'F_MAGENTA','\x1b[35;2m' : 'F_DIM_MAGENTA','\x1b[45m' : 'B_DIM_MAGENTA',
-'\x1b[31;1m' : 'F_RED',    '\x1b[31;2m' : 'F_DIM_RED',    '\x1b[41m' : 'B_DIM_RED',
-'\x1b[30;1m' : 'F_GREY',   '\x1b[30;2m' : 'F_BLACK',      '\x1b[40m' : 'B_BLACK'}
+'\x1b[37;1m' : 'WHITE',  '\x1b[37;2m' : 'SILVER',  '\x1b[47m' : '_SILVER',
+'\x1b[33;1m' : 'YELLOW', '\x1b[33;2m' : 'OLIVE',   '\x1b[43m' : '_OLIVE',
+'\x1b[32;1m' : 'GREEN',  '\x1b[32;2m' : 'LAUREL',  '\x1b[42m' : '_LAUREL',
+'\x1b[36;1m' : 'CYAN',   '\x1b[36;2m' : 'TEAL',    '\x1b[46m' : '_TEAL',
+'\x1b[34;1m' : 'BLUE',   '\x1b[34;2m' : 'NAVY',    '\x1b[44m' : '_NAVY',
+'\x1b[35;1m' : 'MAGENTA','\x1b[35;2m' : 'EGGPLANT','\x1b[45m' : '_EGGPLANT',
+'\x1b[31;1m' : 'RED',    '\x1b[31;2m' : 'MAROON',  '\x1b[41m' : '_MAROON',
+'\x1b[30;1m' : 'GREY',   '\x1b[30;2m' : 'BLACK',   '\x1b[40m' : '_BLACK'   }
 
 RC=RESET_COLORS = '\x1b[40;37;22m'
 
@@ -49,6 +59,9 @@ def vert(y):
     elif y<0:   print(end='\x1b['+str(abs(y))+'A')
 
 def curto(y=0, x=0):     print(end='\x1b['+str(y+1)+';'+str(x+1)+'H')
+
+
+W=MAX_WIDTH = 80;     H=MAX_HEIGHT = 50
 
 def blank_chmp(y=H, x=W):
    return [[(None, None, None)]*x for row in range(y)]

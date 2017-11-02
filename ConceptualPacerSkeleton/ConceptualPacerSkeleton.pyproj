@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>pacer1onCUI3.py</StartupFile>
+    <StartupFile>cui4charms.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -34,6 +34,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cui3toolbox.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui4charms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui4colors.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui4cursor.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cuielements.py">
