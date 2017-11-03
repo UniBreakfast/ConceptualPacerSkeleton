@@ -45,6 +45,9 @@
     <Compile Include="cui4cursor.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cui4keycatch.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cuielements.py">
       <SubType>Code</SubType>
     </Compile>
@@ -67,7 +70,7 @@
     <Compile Include="menuitems.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="module1.py">
+    <Compile Include="sandbox2.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="keymapper.py">
@@ -76,7 +79,7 @@
     <Compile Include="consoleui.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="module2.py">
+    <Compile Include="sandbox3.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="module3.py">
@@ -91,6 +94,9 @@
     <Compile Include="sandbox1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="sandbox4.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="snake.py">
       <SubType>Code</SubType>
     </Compile>
@@ -102,6 +108,12 @@
     </Compile>
     <Compile Include="Time It - flat_the_list.py" />
     <Compile Include="Time It - make_blank_charmap.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tkExample.pyw">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tkPacer0.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="View Control.py">

@@ -21,14 +21,22 @@ H=MAX_HEIGHT = 50;     W=MAX_WIDTH = 80
 #except: print('выбор непонятен, взято значение по умолчанию 80')
 
 
-# 
+# Класс посимвольных карт изображения (прямоугольников) для консольного интерфейса
+# Кайждая символьная карта может быть измененеа в памяти и затем выведена на экран
 class CharMap(list):
     
+    # Символьная карта может быть создана несколькими вариантами:
+    # - без параметров - прозрачный прямоугольник предполагаемых размеров экрана
+    # - с указанием заполнителя - надписи, которой он будет покрыт
+    # - с указанием цвета надписи и фона - без них будут цвета по умолчанию
+    # - с указанием расстояния между образцами заполнителя и символа,
+    #   которым это расстояние будет заполнено, можно с указанием его цвета
     def __init__(self, height=MAX_HEIGHT, width=MAX_WIDTH,
                  filler=None, background_color=None, text_color=None, spacing=None,
                  vertical_spacing=0, horizontal_spacing=0, spacing_color=None):
         self.h = height
         self.w = width
+        if not spacing_color: spacing_color = text_color
 
         if not (spacing or vertical_spacing or horizontal_spacing): 
             no_spacing = True
@@ -48,7 +56,6 @@ class CharMap(list):
                 for pattern in range(0, width, len(filler)):
                     charmap.inscribe(filler, row, pattern, 
                                      background_color, text_color, 'crop')
-
         else: 
             charmap = CharMap(height, width, spacing, background_color, spacing_color)
             for row in range(vertical_spacing, height, vertical_spacing+1):
@@ -64,6 +71,10 @@ class CharMap(list):
         list.__init__(self, charmap)
 
 
+    # Метод позволяет сделать на карте надпись в указанном месте, с заданным
+    # цветом и фоном. Также можно указать, как быть, если надпись не помещается:
+    # обрезать, перенести на следующую строку, перенести под начало этой строки,
+    # расширить карту на сколько нужно, уместить, начав писать раньше, пропустить
     def inscribe(self, text, position_y=0, position_x=0,
                  background_color=None, text_color=None,
                  exceeds=('crop', 'wrap', 'indent', 'extend', 'fit', 'skip')):
@@ -125,6 +136,10 @@ class CharMap(list):
                     self[y][x+i] = (self[y][x+i][0], self[y][x+i][1], char)
 
 
+    # Метод позволяет сделать на карте отпечаток другой карты в указанном месте
+    # Также можно указать, как быть, если отпечаток не помещается:
+    # обрезать, расширить карту на сколько нужно, уместить, поместив отпечаток раньше,
+    # пропустить, не делая непомещающийся отпечаток
     def stamp(self, charmap, position_y=0, position_x=0,
               exceeds=('crop', 'extend', 'fit', 'skip')):
         y=position_y; x=position_x
@@ -149,12 +164,25 @@ class CharMap(list):
         for j, line in enumerate(charmap):
             for i, char in enumerate(line):
                 try:
-                    self[y+j][x+i] = char
+                    self[y+j][x+i] = char if char[-1] else self[y+j][x+i]
                 except:
                     if exceeds == 'crop': break
                     raise IndexError('charmap does not fit')
 
 
+    # Метод возвращает новую символьную карту, являющуюся снимком сверху для
+    # данной символьной карты, положенной сверху на переданную в качестве параметра
+    def topview(self, charmap):
+        tvc_h = self.h if self.h>=charmap.h else charmap.h
+        tvc_w = self.w if self.w>=charmap.w else charmap.w
+        tv_charm = CharMap(tvc_h, tvc_w)
+        tv_charm.stamp(charmap)
+        tv_charm.stamp(self)
+        return tv_charm
+
+
+    # Метод обрезает карту до указанного размера (или какой получится, если не указан)
+    # Левым верхним углом оставшейся части будет символ с указанными координатами
     def crop(self, new_height=None, new_width=None, position_y=0, position_x=0):
         y=position_y;   x=position_x
         
@@ -169,7 +197,47 @@ class CharMap(list):
         self.h = len(self);     self.w = len(self[0])
 
 
-    def show(self, position_y=0, position_x=0, relative=True):
+    # Метод обрезает карту с каждой стороны на сколько указано
+    def crop_edge(self, top=0, bottom=0, left=0, right=0):
+        y_cropped_charm = self[top:self.h-bottom]
+        cropped_charm = []
+        for line in y_cropped_charm: cropped_charm.append(line[left:self.w-right])
+        self.clear()
+        self+=cropped_charm
+        self.h = len(self);     self.w = len(self[0])
+
+
+    # Метод расширяет карту, дотачивая прозрачными краями до указанного размера
+    # (или какой получится, если не указан)
+    # Левый верхний угол будет в указанных координатах
+    def extend(self, new_height=None, new_width=None, position_y=0, position_x=0):
+        y=position_y;   x=position_x
+
+        new_height = new_height if new_height else self.h+y
+        new_width  = new_width  if new_width  else self.w+x
+
+        extended_charm = CharMap(new_height, new_width)
+        extended_charm.stamp(self, y, x)
+        self.clear()
+        self+=extended_charm
+
+
+    # Метод расширяет карту с каждой стороны на сколько указано, дотачивая прозрачным
+    def extend_edge(self, top=0, bottom=0, left=0, right=0):
+
+        new_height = self.h + top + bottom
+        new_width  = self.w + left + right
+
+        extended_charm = CharMap(new_height, new_width)
+        extended_charm.stamp(self, top, left)
+        self.clear()
+        self+=extended_charm
+
+        
+    # Метод выводит карту в консоль поверх того, что уже выведено, в указанном месте
+    # или в начале, если место не указано. Позиционирование вывода может быть
+    # относительно начала следующей строки за позицией курсора.
+    def show(self, position_y=0, position_x=0, relative=False):
         y=position_y;   x=position_x
 
         preshow = self
@@ -223,6 +291,8 @@ class CharMap(list):
         print(end=''.join(char_list))
         
 
+    # Метод выводит карту в консоль полноэкранным кадром, замещая прежний вывод
+    # Карта может быть выведена в указанном месте экрана.
     def show_instead(self, position_y=0, position_x=0):
         y=position_y;   x=position_x
         
@@ -274,80 +344,15 @@ class CharMap(list):
         print(end=''.join(char_list))
         curto()
 
+
+    # Вызов карты по умолчанию будет выводить её полноэкранным кадром
     def __call__(self, position_y=0, position_x=0):
         self.show_instead(position_y, position_x)
 
 
 
-def charm_transparent(y=H, x=W):
-   return [[(None, None, None)]*x for row in range(y)]
-
-def underlay_chmp(y=H, x=W, char='.', b_color=BLACK_, f_color=GREY):
-    return (((b_color, f_color, char),)*x,)*y
-
-def write_to_chmp(charmap, text, pos_y, pos_x, colors=None):
-    if type(text) is str:
-        if colors:
-            for i, char in enumerate(text):
-                charmap[pos_y][pos_x+i] = (colors[0], colors[1], char)
-        else:
-            for i, char in enumerate(text):
-                charmap[pos_y][pos_x+i] = (charmap[pos_y][pos_x+i][0], 
-                                           charmap[pos_y][pos_x+i][1], char)
-    else:
-        for j, line in enumerate(text):
-            for i, char in enumerate(line):
-                charmap[pos_y+j][pos_x+i] = char
-
-def topview_chmp(charmap, underlay):
-    topview = blank_chmp(len(charmap), len(charmap[0]))
-    for y, row in enumerate(charmap):
-        for x, char in enumerate(row):
-            if char[2]!=None:  topview[y][x] = char
-            else:  topview[y][x] = underlay[y][x]
-    return topview
-
-def crop_chmp(charmap, width=MAX_WIDTH, height=MAX_HEIGHT, 
-              position_x=0, position_y=0):
-    y_cropped_chmp = charmap[position_y:position_y+height]
-    x_cropped_chmp = []
-    for line in y_cropped_chmp: x_cropped_chmp.append(line[position_x:position_x+width])
-    return x_cropped_chmp
-
-def linear_chmp(charmap):
-    linear = list(chain(*charmap))
-    return linear
-
-def disredund_chmp(linear_charmap):
-    first_match=True
-    for i, char in enumerate(linear_charmap[1:]):
-        if first_match:
-            if char[0] == linear_charmap[i][0] and char[1] == linear_charmap[i][1]:
-                linear_charmap[i+1] = [linear_charmap[i+1][2]]
-                first_match=False
-                j = i
-        else:
-            if char[0] == linear_charmap[j][0] and char[1] == linear_charmap[j][1]:
-                linear_charmap[i+1] = [linear_charmap[i+1][2]]
-            else:
-                first_match=True
-
-def show_chmp(linear_charmap):
-    char_list=[]
-    for char in linear_charmap:
-        charstring = ''.join((cell for cell in char if not cell is None))
-        charstring = charstring if charstring else RC+' '
-        char_list.append(charstring)
-
-    del char_list[-1]
-    curto()
-    print(end=''.join(char_list))
-    curto()
-
-####   для тестирования   ##########################################################
+####   участок для тестирования   ####################################################
 
 if __name__ == '__main__':
     pass
 
-    a = CharMap(20, 23, '1', MR_, RD, '.', 2, 3, GR)
-    a()
