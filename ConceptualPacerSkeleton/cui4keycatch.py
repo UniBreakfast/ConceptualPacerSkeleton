@@ -81,14 +81,10 @@ def catch_key(*acceptable_keys):
                 elif str(prechoice)+str(choice) in meaning and meaning[str(prechoice)+str(choice)] == 'Alt+F4': quit()
                 else:
                     prechoice = None
-                    if acceptable_keys and acceptable_keys[-1] != 'silent':
-                        print(end='... такой вариант не предлагается, будьте внимательны...\r')
                     firstTry = False
             elif choice in meaning and meaning[choice] in acceptable_keys:
                 return meaning[choice]
             elif firstTry:
-                if acceptable_keys and acceptable_keys[-1] != 'silent':
-                    print(end='... такой вариант не предлагается, будьте внимательны...\r')
                 firstTry = False
                     
         choice = getch()

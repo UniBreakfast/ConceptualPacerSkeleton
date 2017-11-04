@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8e36a7ac-c8c2-45c3-a514-d8d67596ea18</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>cui4charms.py</StartupFile>
+    <StartupFile>cui4sandbox.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -36,7 +36,13 @@
     <Compile Include="cui3toolbox.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="cui4abstracts.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="cui4charms.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="cui4classes.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="cui4colors.py">
@@ -79,7 +85,7 @@
     <Compile Include="consoleui.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="sandbox3.py">
+    <Compile Include="cui4pacer0.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="module3.py">
@@ -94,7 +100,7 @@
     <Compile Include="sandbox1.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="sandbox4.py">
+    <Compile Include="cui4sandbox.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="snake.py">
